@@ -7,6 +7,18 @@ PromptPaste is an AI text assistant that lets you correct, rewrite, transform, a
 
 It works with multiple AI providers and allows you to create your own actions using prompts and variables. Your API keys stay on your device and are protected using Android Keystore.
 
+## Showcase
+
+### App UI
+
+![PromptPaste app interface showing the editor, custom actions, keyboard integration, and provider settings](docs/images/promptpaste-app-ui.png)
+
+### Workflow
+
+Select text, choose an action, review the generated result, and replace the original selection.
+
+![PromptPaste workflow from selecting text through reviewing and replacing the result](docs/images/promptpaste-workflow.png)
+
 ## Download
 
 [Download the latest Android APK](https://github.com/ubaimutl/PromptPaste-Android/releases/latest)
