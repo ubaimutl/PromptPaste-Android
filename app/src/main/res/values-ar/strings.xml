@@ -56,8 +56,8 @@
     <string name="editor_copy_close">نسخ وإغلاق</string>
     <string name="editor_use_as_input">استخدام كإدخال</string>
     <string name="editor_text">النص</string>
-    <plurals name="editor_characters"><item quantity="one">حرف واحد</item><item quantity="two">حرفان</item><item quantity="few">%1$d أحرف</item><item quantity="many">%1$d حرفًا</item><item quantity="other">%1$d حرف</item></plurals>
-    <plurals name="editor_chars"><item quantity="one">حرف واحد</item><item quantity="two">حرفان</item><item quantity="few">%1$d أحرف</item><item quantity="many">%1$d حرفًا</item><item quantity="other">%1$d حرف</item></plurals>
+    <plurals name="editor_characters"><item quantity="zero">لا أحرف</item><item quantity="one">حرف واحد</item><item quantity="two">حرفان</item><item quantity="few">%1$d أحرف</item><item quantity="many">%1$d حرفًا</item><item quantity="other">%1$d حرف</item></plurals>
+    <plurals name="editor_chars"><item quantity="zero">لا أحرف</item><item quantity="one">حرف واحد</item><item quantity="two">حرفان</item><item quantity="few">%1$d أحرف</item><item quantity="many">%1$d حرفًا</item><item quantity="other">%1$d حرف</item></plurals>
     <string name="editor_paste">لصق</string>
     <string name="editor_clear">مسح</string>
     <string name="editor_choose_action">اختر إجراءً</string>
@@ -123,7 +123,7 @@
     <string name="status_api_key_removed">تمت إزالة مفتاح API</string>
     <string name="status_api_key_saved">تم حفظ مفتاح API بأمان</string>
     <string name="status_api_key_error">تعذر حفظ مفتاح API.</string>
-    <plurals name="status_models_available"><item quantity="one">نموذج واحد متاح</item><item quantity="two">نموذجان متاحان</item><item quantity="few">%1$d نماذج متاحة</item><item quantity="many">%1$d نموذجًا متاحًا</item><item quantity="other">%1$d نموذج متاح</item></plurals>
+    <plurals name="status_models_available"><item quantity="zero">لا نماذج متاحة</item><item quantity="one">نموذج واحد متاح</item><item quantity="two">نموذجان متاحان</item><item quantity="few">%1$d نماذج متاحة</item><item quantity="many">%1$d نموذجًا متاحًا</item><item quantity="other">%1$d نموذج متاح</item></plurals>
     <string name="status_models_error">تعذر تحميل النماذج.</string>
     <string name="status_action_invalid">يحتاج الإجراء إلى اسم ومطالبة تحويل.</string>
     <string name="result_copied">تم نسخ النتيجة</string>

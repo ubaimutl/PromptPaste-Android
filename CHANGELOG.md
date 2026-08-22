@@ -2,6 +2,26 @@
 
 All notable changes to PromptPaste for Android are documented here.
 
+## 1.5.0 - 2026-08-23
+
+### Added
+
+- Localized app, keyboard, status, and error messages in English, German, Arabic, Spanish, French, Brazilian Portuguese, Hindi, and Simplified Chinese.
+- Full-screen review flow for keyboard actions, with inline keyboard review retained as an optional setting.
+- App UI and text-replacement workflow images in the README.
+
+### Improved
+
+- Refresh the action keyboard language whenever it opens and use right-to-left layout for Arabic.
+- Refined keyboard action spacing and review behavior across supported text editors.
+- Keep API keys encrypted with Android Keystore and exclude app data from backups and device transfers.
+
+### Fixed
+
+- Return to the original app after confirming a keyboard replacement.
+- Prevent duplicate keyboard inset padding from creating empty space in Editor and Settings.
+- Resize PromptPaste correctly when the normal Android keyboard opens.
+
 ## 1.4.0 - 2026-08-22
 
 ### Added
