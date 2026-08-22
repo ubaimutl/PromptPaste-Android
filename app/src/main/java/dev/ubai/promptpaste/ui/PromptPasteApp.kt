@@ -81,7 +81,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -98,20 +100,30 @@ import dev.ubai.promptpaste.data.InputMode
 import dev.ubai.promptpaste.data.ModelOption
 import dev.ubai.promptpaste.data.Provider
 
+
 private enum class AppSection(
-    val label: String,
+    val labelRes: Int,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
 ) {
-    EDITOR("Editor", Icons.Filled.Edit, Icons.Outlined.Edit),
-    ACTIONS("Actions", Icons.Filled.AutoAwesome, Icons.Outlined.AutoAwesome),
-    SETTINGS("Settings", Icons.Filled.Settings, Icons.Outlined.Settings),
+    EDITOR(R.string.nav_editor, Icons.Filled.Edit, Icons.Outlined.Edit),
+    ACTIONS(R.string.nav_actions, Icons.Filled.AutoAwesome, Icons.Outlined.AutoAwesome),
+    SETTINGS(R.string.nav_settings, Icons.Filled.Settings, Icons.Outlined.Settings),
 }
 
 internal fun shouldReviewDirectReplacement(
     reviewBeforeReplacement: Boolean,
     readOnly: Boolean,
 ): Boolean = reviewBeforeReplacement && !readOnly
+
+@Composable
+private fun builtInActionLabel(action: BuiltInAction): String = stringResource(
+    when (action) {
+        BuiltInAction.CORRECT -> R.string.process_text_correct_label
+        BuiltInAction.REWRITE -> R.string.process_text_rewrite_label
+        BuiltInAction.RUN_PROMPT -> R.string.process_text_run_label
+    },
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,8 +152,8 @@ fun PromptPasteApp(
                     ) {
                         Image(
                             painter = painterResource(R.drawable.ic_promptpaste_topbar),
-                            contentDescription = "PromptPaste logo",
-                            modifier = Modifier.size(36.dp),
+                            contentDescription = stringResource(R.string.promptpaste_logo),
+                            modifier = Modifier.size(32.dp),
                         )
                         Column {
                             Text("PromptPaste", fontWeight = FontWeight.Bold)
@@ -164,18 +176,19 @@ fun PromptPasteApp(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
                 AppSection.entries.forEach { item ->
+                    val itemLabel = stringResource(item.labelRes)
                     NavigationBarItem(
                         selected = section == item,
                         onClick = { sectionName = item.name },
                         icon = {
                             Icon(
                                 imageVector = if (section == item) item.selectedIcon else item.unselectedIcon,
-                                contentDescription = item.label,
+                                contentDescription = itemLabel,
                             )
                         },
                         label = {
                             Text(
-                                item.label,
+                                itemLabel,
                                 fontWeight = if (section == item) FontWeight.Bold else FontWeight.Normal,
                             )
                         },
@@ -234,6 +247,7 @@ fun DirectProcessTextApp(
     onOpenSettings: () -> Unit,
 ) {
     val state = viewModel.state
+    val actionLabel = builtInActionLabel(action)
     val reviewBeforeReplacing = shouldReviewDirectReplacement(
         reviewBeforeReplacement = state.settings.reviewBeforeKeyboardReplacement,
         readOnly = readOnly,
@@ -249,7 +263,7 @@ fun DirectProcessTextApp(
             TopAppBar(
                 title = {
                     Column {
-                        Text("PromptPaste: ${action.label}", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.promptpaste_action_title, actionLabel), fontWeight = FontWeight.Bold)
                         Text(
                             state.settings.provider.displayName,
                             style = MaterialTheme.typography.labelMedium,
@@ -258,7 +272,7 @@ fun DirectProcessTextApp(
                         )
                     }
                 },
-                navigationIcon = { TextButton(onClick = onCancel) { Text("Cancel") } },
+                navigationIcon = { TextButton(onClick = onCancel) { Text(stringResource(R.string.common_cancel)) } },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                 ),
@@ -276,13 +290,13 @@ fun DirectProcessTextApp(
             when {
                 state.output.isNotBlank() && reviewBeforeReplacing -> {
                     Text(
-                        "Review result",
+                        stringResource(R.string.review_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "Check or edit the generated text before replacing the selection.",
+                        stringResource(R.string.review_description),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(Modifier.height(16.dp))
@@ -290,29 +304,29 @@ fun DirectProcessTextApp(
                         value = state.output,
                         onValueChange = viewModel::updateOutput,
                         modifier = Modifier.fillMaxWidth().heightIn(min = 160.dp),
-                        label = { Text("Result") },
+                        label = { Text(stringResource(R.string.common_result)) },
                     )
                     Spacer(Modifier.height(20.dp))
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                         OutlinedButton(
                             onClick = onCancel,
                             modifier = Modifier.weight(1f),
-                        ) { Text("Cancel") }
+                        ) { Text(stringResource(R.string.common_cancel)) }
                         Button(
                             onClick = { onFinish(state.output) },
                             modifier = Modifier.weight(1f),
-                        ) { Text("Replace selection") }
+                        ) { Text(stringResource(R.string.common_replace_selection)) }
                     }
                 }
                 state.error.isNotBlank() -> {
                     Text(
                         when (action) {
-                            BuiltInAction.CORRECT -> "Could not correct the selection"
-                            BuiltInAction.REWRITE -> "Could not rewrite the selection"
-                            BuiltInAction.RUN_PROMPT -> "Could not run the selected prompt"
+                            BuiltInAction.CORRECT -> stringResource(R.string.error_correct_selection)
+                            BuiltInAction.REWRITE -> stringResource(R.string.error_rewrite_selection)
+                            BuiltInAction.RUN_PROMPT -> stringResource(R.string.error_run_prompt)
                         },
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
@@ -323,12 +337,12 @@ fun DirectProcessTextApp(
                     Button(
                         onClick = onOpenSettings,
                         modifier = Modifier.fillMaxWidth(),
-                    ) { Text("Open Settings") }
+                    ) { Text(stringResource(R.string.common_open_settings)) }
                     Spacer(Modifier.height(8.dp))
                     OutlinedButton(
                         onClick = onRetry,
                         modifier = Modifier.fillMaxWidth(),
-                    ) { Text("Try again") }
+                    ) { Text(stringResource(R.string.common_try_again)) }
                 }
                 state.isRunning -> {
                     CircularProgressIndicator(
@@ -338,9 +352,9 @@ fun DirectProcessTextApp(
                     Spacer(Modifier.height(20.dp))
                     Text(
                         when (action) {
-                            BuiltInAction.CORRECT -> "Correcting selected text…"
-                            BuiltInAction.REWRITE -> "Rewriting selected text…"
-                            BuiltInAction.RUN_PROMPT -> "Running selected prompt…"
+                            BuiltInAction.CORRECT -> stringResource(R.string.running_correct)
+                            BuiltInAction.REWRITE -> stringResource(R.string.running_rewrite)
+                            BuiltInAction.RUN_PROMPT -> stringResource(R.string.running_prompt)
                         },
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
@@ -348,9 +362,9 @@ fun DirectProcessTextApp(
                     Spacer(Modifier.height(8.dp))
                     Text(
                         if (reviewBeforeReplacing) {
-                            "You can review the result before replacing the selection."
+                            stringResource(R.string.review_available_message)
                         } else {
-                            "The result will replace the selection automatically."
+                            stringResource(R.string.replacement_automatic_message)
                         },
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -387,8 +401,8 @@ fun ProcessTextApp(
                         )
                     }
                 },
-                navigationIcon = { TextButton(onClick = onClose) { Text("Close") } },
-                actions = { TextButton(onClick = onOpenSettings) { Text("Settings") } },
+                navigationIcon = { TextButton(onClick = onClose) { Text(stringResource(R.string.common_close)) } },
+                actions = { TextButton(onClick = onOpenSettings) { Text(stringResource(R.string.common_settings)) } },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                 ),
@@ -406,11 +420,15 @@ fun ProcessTextApp(
             onCancel = viewModel::cancelRequest,
             onCopy = onCopy,
             onUseResult = { onFinish(state.output) },
-            resultActionLabel = if (readOnly) "Copy and close" else "Replace selection",
-            supportingText = if (readOnly) {
-                "This app marked the selection read-only. PromptPaste will copy the result instead."
+            resultActionLabel = if (readOnly) {
+                stringResource(R.string.editor_copy_close)
             } else {
-                "Choose an action, review the result, then return it to the original app."
+                stringResource(R.string.common_replace_selection)
+            },
+            supportingText = if (readOnly) {
+                stringResource(R.string.editor_read_only_help)
+            } else {
+                stringResource(R.string.editor_process_help)
             },
             modifier = Modifier.padding(padding),
         )
@@ -430,17 +448,19 @@ private fun EditorScreen(
     onCopy: (String) -> Unit,
     onUseResult: () -> Unit,
     modifier: Modifier = Modifier,
-    resultActionLabel: String = "Use as input",
-    supportingText: String = "Paste text or share it from another app, then choose an action.",
+    resultActionLabel: String? = null,
+    supportingText: String? = null,
 ) {
+    val resolvedResultActionLabel = resultActionLabel ?: stringResource(R.string.editor_use_as_input)
+    val resolvedSupportingText = supportingText ?: stringResource(R.string.editor_default_help)
     LazyColumn(
-        modifier = modifier.fillMaxSize().imePadding(),
+        modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item {
             Text(
-                supportingText,
+                resolvedSupportingText,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
             )
@@ -451,7 +471,7 @@ private fun EditorScreen(
                     value = state.input,
                     onValueChange = onInputChange,
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Text") },
+                    label = { Text(stringResource(R.string.editor_text)) },
                     minLines = 6,
                     maxLines = 14,
                     shape = RoundedCornerShape(12.dp),
@@ -462,7 +482,11 @@ private fun EditorScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        "${state.input.length} characters",
+                        pluralStringResource(
+                            R.plurals.editor_characters,
+                            state.input.length,
+                            state.input.length,
+                        ),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -479,7 +503,7 @@ private fun EditorScreen(
                                         modifier = Modifier.size(16.dp),
                                     )
                                     Spacer(Modifier.width(6.dp))
-                                    Text("Paste")
+                                    Text(stringResource(R.string.editor_paste))
                                 }
                             }
                             if (onClear != null && state.input.isNotEmpty()) {
@@ -493,7 +517,7 @@ private fun EditorScreen(
                                         modifier = Modifier.size(16.dp),
                                     )
                                     Spacer(Modifier.width(4.dp))
-                                    Text("Clear")
+                                    Text(stringResource(R.string.editor_clear))
                                 }
                             }
                         }
@@ -503,7 +527,7 @@ private fun EditorScreen(
         }
         item {
             Text(
-                "Choose an action",
+                stringResource(R.string.editor_choose_action),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )
@@ -523,7 +547,7 @@ private fun EditorScreen(
                         modifier = Modifier.size(18.dp),
                     )
                     Spacer(Modifier.width(6.dp))
-                    Text(BuiltInAction.CORRECT.label)
+                    Text(builtInActionLabel(BuiltInAction.CORRECT))
                 }
                 FilledTonalButton(
                     onClick = { onBuiltIn(BuiltInAction.REWRITE) },
@@ -536,7 +560,7 @@ private fun EditorScreen(
                         modifier = Modifier.size(18.dp),
                     )
                     Spacer(Modifier.width(6.dp))
-                    Text(BuiltInAction.REWRITE.label)
+                    Text(builtInActionLabel(BuiltInAction.REWRITE))
                 }
                 FilledTonalButton(
                     onClick = { onBuiltIn(BuiltInAction.RUN_PROMPT) },
@@ -549,7 +573,7 @@ private fun EditorScreen(
                         modifier = Modifier.size(18.dp),
                     )
                     Spacer(Modifier.width(6.dp))
-                    Text(BuiltInAction.RUN_PROMPT.label)
+                    Text(builtInActionLabel(BuiltInAction.RUN_PROMPT))
                 }
                 state.actions.filter { it.enabled }.forEach { action ->
                     OutlinedButton(
@@ -580,11 +604,11 @@ private fun EditorScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
-                                "Generating response with ${state.settings.provider.displayName}…",
+                                stringResource(R.string.editor_generating, state.settings.provider.displayName),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
-                            TextButton(onClick = onCancel) { Text("Cancel") }
+                            TextButton(onClick = onCancel) { Text(stringResource(R.string.common_cancel)) }
                         }
                     }
                 }
@@ -609,7 +633,7 @@ private fun EditorScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
-                                "Result",
+                                stringResource(R.string.common_result),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                             )
@@ -618,7 +642,11 @@ private fun EditorScreen(
                                 color = MaterialTheme.colorScheme.surfaceContainerHighest,
                             ) {
                                 Text(
-                                    "${state.output.length} chars",
+                                    pluralStringResource(
+                                        R.plurals.editor_chars,
+                                        state.output.length,
+                                        state.output.length,
+                                    ),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -631,7 +659,7 @@ private fun EditorScreen(
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 6,
                             maxLines = 16,
-                            label = { Text("Review and edit") },
+                            label = { Text(stringResource(R.string.editor_review_edit)) },
                             shape = RoundedCornerShape(12.dp),
                         )
                         Row(
@@ -648,12 +676,12 @@ private fun EditorScreen(
                                     modifier = Modifier.size(16.dp),
                                 )
                                 Spacer(Modifier.width(6.dp))
-                                Text("Copy")
+                                Text(stringResource(R.string.common_copy))
                             }
                             Button(
                                 onClick = onUseResult,
                                 shape = RoundedCornerShape(20.dp),
-                            ) { Text(resultActionLabel) }
+                            ) { Text(resolvedResultActionLabel) }
                         }
                     }
                 }
@@ -680,7 +708,7 @@ private fun ErrorCard(message: String) {
         ) {
             Icon(
                 Icons.Default.ErrorOutline,
-                contentDescription = "Error",
+                contentDescription = stringResource(R.string.common_error),
                 tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier.size(24.dp),
             )
@@ -718,9 +746,9 @@ private fun ActionsScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text("Custom actions", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.actions_title), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                     Text(
-                        "Create reusable transformations or prompts.",
+                        stringResource(R.string.actions_description),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -738,7 +766,7 @@ private fun ActionsScreen(
                         modifier = Modifier.size(18.dp),
                     )
                     Spacer(Modifier.width(6.dp))
-                    Text("Add")
+                    Text(stringResource(R.string.common_add))
                 }
             }
         }
@@ -761,12 +789,12 @@ private fun ActionsScreen(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                         Text(
-                            "No custom actions yet",
+                            stringResource(R.string.actions_empty_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                         )
                         Text(
-                            "Built-in Correct, Rewrite, and Run prompt are always available. Tap 'Add' to create your own.",
+                            stringResource(R.string.actions_empty_description),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodySmall,
                         )
@@ -810,7 +838,7 @@ private fun ActionsScreen(
                         )
                     }
                     Text(
-                        action.prompt.ifBlank { "The selected text is used directly as the prompt." },
+                        action.prompt.ifBlank { stringResource(R.string.actions_direct_prompt) },
                         maxLines = 3,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodySmall,
@@ -827,7 +855,7 @@ private fun ActionsScreen(
                         ) {
                             Icon(
                                 Icons.Default.KeyboardArrowUp,
-                                contentDescription = "Move up",
+                                contentDescription = stringResource(R.string.actions_move_up),
                                 modifier = Modifier.size(20.dp),
                             )
                         }
@@ -837,7 +865,7 @@ private fun ActionsScreen(
                         ) {
                             Icon(
                                 Icons.Default.KeyboardArrowDown,
-                                contentDescription = "Move down",
+                                contentDescription = stringResource(R.string.actions_move_down),
                                 modifier = Modifier.size(20.dp),
                             )
                         }
@@ -847,14 +875,14 @@ private fun ActionsScreen(
                         }) {
                             Icon(
                                 Icons.Default.Edit,
-                                contentDescription = "Edit action",
+                                contentDescription = stringResource(R.string.actions_edit),
                                 modifier = Modifier.size(18.dp),
                             )
                         }
                         IconButton(onClick = { onDelete(action) }) {
                             Icon(
                                 Icons.Default.Delete,
-                                contentDescription = "Delete action",
+                                contentDescription = stringResource(R.string.actions_delete),
                                 tint = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.size(18.dp),
                             )
@@ -877,9 +905,15 @@ private fun ActionsScreen(
     }
 }
 
+@Composable
 private fun actionSummary(action: CustomAction): String {
-    val mode = if (action.inputMode == InputMode.PROMPT) "Prompt" else "Transform"
-    val provider = Provider.entries.firstOrNull { it.id == action.providerId }?.displayName ?: "Active provider"
+    val mode = if (action.inputMode == InputMode.PROMPT) {
+        stringResource(R.string.actions_mode_prompt)
+    } else {
+        stringResource(R.string.actions_mode_transform)
+    }
+    val provider = Provider.entries.firstOrNull { it.id == action.providerId }?.displayName
+        ?: stringResource(R.string.actions_active_provider)
     val limits = buildList {
         if (action.inputLimit > 0) add("in: ${action.inputLimit}")
         if (action.outputLimit > 0) add("out: ${action.outputLimit}")
@@ -922,7 +956,7 @@ private fun ActionEditorDialog(
         ) {
             Column(Modifier.padding(20.dp)) {
                 Text(
-                    if (action == null) "New action" else "Edit action",
+                    stringResource(if (action == null) R.string.action_new else R.string.action_edit),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                 )
@@ -935,16 +969,20 @@ private fun ActionEditorDialog(
                         value = name,
                         onValueChange = { name = it },
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Name") },
+                        label = { Text(stringResource(R.string.action_name)) },
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
                     )
                     EnumPicker(
-                        label = "Input mode",
-                        value = if (inputMode == InputMode.TRANSFORM) "Transform selected text" else "Use text as prompt",
+                        label = stringResource(R.string.action_input_mode),
+                        value = if (inputMode == InputMode.TRANSFORM) {
+                            stringResource(R.string.action_transform_selected)
+                        } else {
+                            stringResource(R.string.action_use_as_prompt)
+                        },
                         options = listOf(
-                            "Transform selected text" to InputMode.TRANSFORM,
-                            "Use text as prompt" to InputMode.PROMPT,
+                            stringResource(R.string.action_transform_selected) to InputMode.TRANSFORM,
+                            stringResource(R.string.action_use_as_prompt) to InputMode.PROMPT,
                         ),
                         onSelected = { inputMode = it },
                     )
@@ -953,7 +991,15 @@ private fun ActionEditorDialog(
                         onValueChange = { prompt = it },
                         modifier = Modifier.fillMaxWidth(),
                         label = {
-                            Text(if (inputMode == InputMode.PROMPT) "System guidance (optional)" else "Prompt")
+                            Text(
+                                stringResource(
+                                    if (inputMode == InputMode.PROMPT) {
+                                        R.string.action_system_guidance
+                                    } else {
+                                        R.string.action_prompt
+                                    },
+                                ),
+                            )
                         },
                         minLines = 4,
                         maxLines = 8,
@@ -967,19 +1013,19 @@ private fun ActionEditorDialog(
                         value = model,
                         onValueChange = { model = it },
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Model override (optional)") },
+                        label = { Text(stringResource(R.string.action_model_override)) },
                         enabled = providerId.isNotBlank(),
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
                     )
-                    NumberField("Input token limit (0 = auto)", inputLimit) { inputLimit = it }
-                    NumberField("Output token limit (0 = auto)", outputLimit) { outputLimit = it }
+                    NumberField(stringResource(R.string.action_input_limit), inputLimit) { inputLimit = it }
+                    NumberField(stringResource(R.string.action_output_limit), outputLimit) { outputLimit = it }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text("Show in action list", fontWeight = FontWeight.Medium)
+                        Text(stringResource(R.string.action_show_in_list), fontWeight = FontWeight.Medium)
                         Switch(checked = enabled, onCheckedChange = { enabled = it })
                     }
                 }
@@ -988,7 +1034,7 @@ private fun ActionEditorDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
                 ) {
-                    TextButton(onClick = onDismiss) { Text("Cancel") }
+                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) }
                     Button(
                         onClick = {
                             onSave(
@@ -1006,7 +1052,7 @@ private fun ActionEditorDialog(
                             )
                         },
                         enabled = valid,
-                    ) { Text("Save") }
+                    ) { Text(stringResource(R.string.common_save)) }
                 }
             }
         }
@@ -1031,258 +1077,287 @@ private fun SettingsScreen(
     var showModelChooser by remember { mutableStateOf(false) }
 
     LazyColumn(
-        modifier = modifier.fillMaxSize().imePadding(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
+        verticalArrangement = Arrangement.spacedBy(22.dp),
     ) {
         item {
-            Text("Use inside other apps", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(4.dp))
-            Text(
-                "For apps that hide Android text actions, enable the optional PromptPaste Actions " +
-                    "keyboard. Select text, switch to it, and tap an action. It replaces the selection " +
-                    "and returns to your previous keyboard.",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
+            SettingsSectionHeader(
+                title = stringResource(R.string.settings_keyboard_title),
+                description = stringResource(R.string.settings_keyboard_description),
             )
-        }
-        item {
-            ElevatedCard(
-                Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+            Spacer(Modifier.height(10.dp))
+            SettingsCard {
+                Text(
+                    stringResource(R.string.settings_keyboard_actions),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    stringResource(R.string.settings_keyboard_optional),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(14.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    Text("PromptPaste Actions keyboard", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text(
-                        "Android shows a keyboard-access warning when you enable it. PromptPaste " +
-                            "reads only the selected text after you tap an action, and its actions are " +
-                            "disabled in password fields.",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodySmall,
+                    Button(
+                        onClick = onOpenKeyboardSettings,
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp),
+                    ) { Text(stringResource(R.string.settings_enable_keyboard)) }
+                    OutlinedButton(
+                        onClick = onShowKeyboardPicker,
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp),
+                    ) { Text(stringResource(R.string.settings_choose_keyboard)) }
+                }
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    stringResource(R.string.settings_keyboard_warning),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(14.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f))
+                SettingSwitchRow(
+                    title = stringResource(R.string.settings_review_title),
+                    description = stringResource(R.string.settings_review_description),
+                    checked = settings.reviewBeforeKeyboardReplacement,
+                    onCheckedChange = {
+                        onSettingsChange(settings.copy(reviewBeforeKeyboardReplacement = it))
+                    },
+                )
+                if (settings.reviewBeforeKeyboardReplacement) {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+                    SettingSwitchRow(
+                        title = stringResource(R.string.settings_inline_review_title),
+                        description = stringResource(R.string.settings_inline_review_description),
+                        checked = settings.reviewInsideKeyboard,
+                        onCheckedChange = {
+                            onSettingsChange(settings.copy(reviewInsideKeyboard = it))
+                        },
                     )
-                    Row(
-                        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Button(
-                            onClick = onOpenKeyboardSettings,
-                            shape = RoundedCornerShape(20.dp),
-                        ) { Text("Enable keyboard") }
-                        OutlinedButton(
-                            onClick = onShowKeyboardPicker,
-                            shape = RoundedCornerShape(20.dp),
-                        ) { Text("Choose keyboard") }
-                    }
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                }
+            }
+        }
+
+        item {
+            SettingsSectionHeader(
+                title = stringResource(R.string.settings_provider_title),
+                description = stringResource(R.string.settings_provider_description),
+            )
+            Spacer(Modifier.height(10.dp))
+            SettingsCard {
+                ProviderPicker(settings.provider, onProviderChange)
+                Spacer(Modifier.height(14.dp))
+
+                if (settings.provider == Provider.OLLAMA) {
+                    OutlinedTextField(
+                        value = settings.ollamaUrl,
+                        onValueChange = { onSettingsChange(settings.copy(ollamaUrl = it)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(R.string.settings_ollama_address)) },
+                        supportingText = { Text(stringResource(R.string.settings_emulator_address)) },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                    )
+                } else {
+                    OutlinedTextField(
+                        value = state.apiKeyDraft,
+                        onValueChange = onApiKeyChange,
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(R.string.settings_api_key)) },
+                        visualTransformation = if (showKey) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            TextButton(onClick = { showKey = !showKey }) {
+                                Text(
+                                    stringResource(
+                                        if (showKey) R.string.common_hide else R.string.common_show,
+                                    ),
+                                )
+                            }
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                    )
+                    Spacer(Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Column(Modifier.weight(1f)) {
-                            Text("Review before replacing", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                            Text(
-                                "Show the result for keyboard and direct selection actions, then wait for confirmation.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                        Spacer(Modifier.width(12.dp))
-                        Switch(
-                            checked = settings.reviewBeforeKeyboardReplacement,
-                            onCheckedChange = {
-                                onSettingsChange(settings.copy(reviewBeforeKeyboardReplacement = it))
-                            },
+                        Text(
+                            state.apiKeyStatus,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.weight(1f),
                         )
+                        Spacer(Modifier.width(12.dp))
+                        Button(
+                            onClick = onSaveApiKey,
+                            shape = RoundedCornerShape(12.dp),
+                        ) { Text(stringResource(R.string.settings_save_key)) }
                     }
                 }
-            }
-        }
-        item { SectionDivider("AI Provider & Credentials") }
-        item {
-            Text(
-                "Text is sent only when you run an action. API keys are encrypted with Android Keystore.",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
-        item {
-            ProviderPicker(settings.provider, onProviderChange)
-        }
-        if (settings.provider == Provider.OLLAMA) {
-            item {
+
+                Spacer(Modifier.height(14.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f))
+                Spacer(Modifier.height(14.dp))
+
                 OutlinedTextField(
-                    value = settings.ollamaUrl,
-                    onValueChange = { onSettingsChange(settings.copy(ollamaUrl = it)) },
+                    value = settings.modelFor(settings.provider),
+                    onValueChange = { onModelChange(settings.provider, it) },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Ollama address") },
-                    supportingText = { Text("For the Android emulator, a server on your computer is usually 10.0.2.2.") },
+                    label = { Text(stringResource(R.string.settings_model_id)) },
                     singleLine = true,
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(12.dp),
                 )
-            }
-        } else {
-            item {
-                OutlinedTextField(
-                    value = state.apiKeyDraft,
-                    onValueChange = onApiKeyChange,
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text("API key") },
-                    visualTransformation = if (showKey) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        TextButton(onClick = { showKey = !showKey }) {
-                            Text(if (showKey) "Hide" else "Show")
-                        }
-                    },
-                    singleLine = true,
-                    shape = RoundedCornerShape(10.dp),
-                )
-                Spacer(Modifier.height(6.dp))
+                Spacer(Modifier.height(10.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        state.apiKeyStatus,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium,
-                    )
-                    Button(
-                        onClick = onSaveApiKey,
-                        shape = RoundedCornerShape(20.dp),
-                    ) { Text("Save key") }
-                }
-            }
-        }
-        item {
-            OutlinedTextField(
-                value = settings.modelFor(settings.provider),
-                onValueChange = { onModelChange(settings.provider, it) },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("Model ID") },
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
-            )
-            Spacer(Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                OutlinedButton(
-                    onClick = onRefreshModels,
-                    enabled = !state.isLoadingModels,
-                    shape = RoundedCornerShape(20.dp),
-                ) {
-                    if (state.isLoadingModels) {
-                        CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
-                        Spacer(Modifier.width(8.dp))
+                    OutlinedButton(
+                        onClick = onRefreshModels,
+                        enabled = !state.isLoadingModels,
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp),
+                    ) {
+                        if (state.isLoadingModels) {
+                            CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
+                            Spacer(Modifier.width(8.dp))
+                        }
+                        Text(stringResource(R.string.common_refresh))
                     }
-                    Text("Refresh models")
+                    if (state.availableModels.isNotEmpty()) {
+                        FilledTonalButton(
+                            onClick = { showModelChooser = true },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                        ) {
+                            Text(stringResource(R.string.settings_choose_count, state.availableModels.size))
+                        }
+                    }
                 }
-                if (state.availableModels.isNotEmpty()) {
-                    FilledTonalButton(
-                        onClick = { showModelChooser = true },
-                        shape = RoundedCornerShape(20.dp),
-                    ) { Text("Choose model (${state.availableModels.size})") }
+                if (state.modelStatus.isNotBlank()) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        state.modelStatus,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
-            }
-            if (state.modelStatus.isNotBlank()) {
-                Spacer(Modifier.height(6.dp))
+                Spacer(Modifier.height(8.dp))
                 Text(
-                    state.modelStatus,
-                    style = MaterialTheme.typography.bodySmall,
+                    stringResource(R.string.settings_privacy_note),
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
-        item { SectionDivider("Prompt variables") }
+
         item {
-            OutlinedTextField(
-                value = settings.language,
-                onValueChange = { onSettingsChange(settings.copy(language = it)) },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("${'$'}{language}") },
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
+            SettingsSectionHeader(
+                title = stringResource(R.string.settings_variables_title),
+                description = stringResource(R.string.settings_variables_description),
             )
-        }
-        item {
-            OutlinedTextField(
-                value = settings.tone,
-                onValueChange = { onSettingsChange(settings.copy(tone = it)) },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("${'$'}{tone}") },
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
-            )
-        }
-        item {
-            OutlinedTextField(
-                value = settings.style,
-                onValueChange = { onSettingsChange(settings.copy(style = it)) },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("${'$'}{style}") },
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
-            )
-        }
-        item { SectionDivider("Built-in prompts") }
-        item {
-            PromptField("Correct", settings.promptCorrect) {
-                onSettingsChange(settings.copy(promptCorrect = it))
-            }
-        }
-        item {
-            PromptField("Rewrite", settings.promptRewrite) {
-                onSettingsChange(settings.copy(promptRewrite = it))
-            }
-        }
-        item {
-            PromptField("Run selected prompt", settings.promptRun) {
-                onSettingsChange(settings.copy(promptRun = it))
-            }
-        }
-        item { SectionDivider("Run prompt overrides") }
-        item {
-            ProviderOverridePicker(settings.runProviderId) {
-                onSettingsChange(
-                    settings.copy(
-                        runProviderId = it,
-                        runModel = if (it.isBlank()) "" else settings.runModel,
-                    ),
+            Spacer(Modifier.height(10.dp))
+            SettingsCard {
+                OutlinedTextField(
+                    value = settings.language,
+                    onValueChange = { onSettingsChange(settings.copy(language = it)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("${'$'}{language}") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                )
+                Spacer(Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = settings.tone,
+                    onValueChange = { onSettingsChange(settings.copy(tone = it)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("${'$'}{tone}") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                )
+                Spacer(Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = settings.style,
+                    onValueChange = { onSettingsChange(settings.copy(style = it)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("${'$'}{style}") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
                 )
             }
         }
+
         item {
-            OutlinedTextField(
-                value = settings.runModel,
-                onValueChange = { onSettingsChange(settings.copy(runModel = it)) },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("Model override (optional)") },
-                enabled = settings.runProviderId.isNotBlank(),
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
+            SettingsSectionHeader(
+                title = stringResource(R.string.settings_prompts_title),
+                description = stringResource(R.string.settings_prompts_description),
             )
+            Spacer(Modifier.height(10.dp))
+            SettingsCard {
+                PromptField(stringResource(R.string.process_text_correct_label), settings.promptCorrect) {
+                    onSettingsChange(settings.copy(promptCorrect = it))
+                }
+                Spacer(Modifier.height(12.dp))
+                PromptField(stringResource(R.string.process_text_rewrite_label), settings.promptRewrite) {
+                    onSettingsChange(settings.copy(promptRewrite = it))
+                }
+                Spacer(Modifier.height(12.dp))
+                PromptField(stringResource(R.string.settings_run_selected_prompt), settings.promptRun) {
+                    onSettingsChange(settings.copy(promptRun = it))
+                }
+            }
         }
+
         item {
-            NumberField(
-                "Input token limit (0 = auto)",
-                settings.runInputLimit.takeIf { it > 0 }?.toString().orEmpty(),
-            ) { onSettingsChange(settings.copy(runInputLimit = it.toIntOrNull() ?: 0)) }
+            SettingsSectionHeader(
+                title = stringResource(R.string.settings_overrides_title),
+                description = stringResource(R.string.settings_overrides_description),
+            )
+            Spacer(Modifier.height(10.dp))
+            SettingsCard {
+                ProviderOverridePicker(settings.runProviderId) {
+                    onSettingsChange(
+                        settings.copy(
+                            runProviderId = it,
+                            runModel = if (it.isBlank()) "" else settings.runModel,
+                        ),
+                    )
+                }
+                Spacer(Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = settings.runModel,
+                    onValueChange = { onSettingsChange(settings.copy(runModel = it)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text(stringResource(R.string.action_model_override)) },
+                    enabled = settings.runProviderId.isNotBlank(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                )
+                Spacer(Modifier.height(12.dp))
+                NumberField(
+                    stringResource(R.string.action_input_limit),
+                    settings.runInputLimit.takeIf { it > 0 }?.toString().orEmpty(),
+                ) { onSettingsChange(settings.copy(runInputLimit = it.toIntOrNull() ?: 0)) }
+                Spacer(Modifier.height(12.dp))
+                NumberField(
+                    stringResource(R.string.action_output_limit),
+                    settings.runOutputLimit.takeIf { it > 0 }?.toString().orEmpty(),
+                ) { onSettingsChange(settings.copy(runOutputLimit = it.toIntOrNull() ?: 0)) }
+            }
         }
-        item {
-            NumberField(
-                "Output token limit (0 = auto)",
-                settings.runOutputLimit.takeIf { it > 0 }?.toString().orEmpty(),
-            ) { onSettingsChange(settings.copy(runOutputLimit = it.toIntOrNull() ?: 0)) }
-        }
-        item { Spacer(Modifier.height(16.dp)) }
+
+        item { Spacer(Modifier.height(8.dp)) }
     }
 
     if (showModelChooser) {
@@ -1319,14 +1394,14 @@ private fun ModelChooserDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text("Choose model", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                    TextButton(onClick = onDismiss) { Text("Close") }
+                    Text(stringResource(R.string.models_choose), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_close)) }
                 }
                 OutlinedTextField(
                     value = query,
                     onValueChange = { query = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Search ${models.size} models") },
+                    label = { Text(stringResource(R.string.models_search, models.size)) },
                     singleLine = true,
                     shape = RoundedCornerShape(10.dp),
                 )
@@ -1356,7 +1431,7 @@ private fun ModelChooserDialog(
 @Composable
 private fun ProviderPicker(selected: Provider, onSelected: (Provider) -> Unit) {
     EnumPicker(
-        label = "Provider",
+        label = stringResource(R.string.settings_provider),
         value = selected.displayName,
         options = Provider.entries.map { it.displayName to it },
         onSelected = onSelected,
@@ -1365,10 +1440,11 @@ private fun ProviderPicker(selected: Provider, onSelected: (Provider) -> Unit) {
 
 @Composable
 private fun ProviderOverridePicker(selectedId: String, onSelected: (String) -> Unit) {
+    val activeProviderLabel = stringResource(R.string.settings_use_active_provider)
     EnumPicker(
-        label = "Provider override",
-        value = Provider.entries.firstOrNull { it.id == selectedId }?.displayName ?: "Use active provider",
-        options = listOf("Use active provider" to "") + Provider.entries.map { it.displayName to it.id },
+        label = stringResource(R.string.settings_provider_override),
+        value = Provider.entries.firstOrNull { it.id == selectedId }?.displayName ?: activeProviderLabel,
+        options = listOf(activeProviderLabel to "") + Provider.entries.map { it.displayName to it.id },
         onSelected = onSelected,
     )
 }
@@ -1417,7 +1493,7 @@ private fun PromptField(label: String, value: String, onValueChange: (String) ->
         label = { Text(label) },
         minLines = 3,
         maxLines = 7,
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(12.dp),
     )
 }
 
@@ -1430,15 +1506,83 @@ private fun NumberField(label: String, value: String, onValueChange: (String) ->
         label = { Text(label) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         singleLine = true,
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(12.dp),
     )
 }
 
 @Composable
-private fun SectionDivider(title: String) {
-    Column(Modifier.padding(top = 10.dp)) {
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
-        Spacer(Modifier.height(14.dp))
-        Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+private fun SettingsSectionHeader(
+    title: String,
+    description: String? = null,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+        Text(
+            title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        if (!description.isNullOrBlank()) {
+            Text(
+                description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SettingsCard(content: @Composable () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        ),
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
+        ),
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            content()
+        }
+    }
+}
+
+@Composable
+private fun SettingSwitchRow(
+    title: String,
+    description: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Text(
+                title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+            )
+            Text(
+                description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Spacer(Modifier.width(16.dp))
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+        )
     }
 }

@@ -45,7 +45,7 @@ class ProcessTextActivity : ComponentActivity() {
 
     private fun copy(text: String) {
         (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
-            .setPrimaryClip(ClipData.newPlainText("PromptPaste result", text))
+            .setPrimaryClip(ClipData.newPlainText(getString(R.string.clipboard_result_label), text))
     }
 
     private fun finishWithResult(text: String) {

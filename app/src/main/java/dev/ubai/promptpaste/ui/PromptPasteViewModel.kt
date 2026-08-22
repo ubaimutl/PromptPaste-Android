@@ -16,6 +16,7 @@ import dev.ubai.promptpaste.data.Provider
 import dev.ubai.promptpaste.data.SettingsRepository
 import dev.ubai.promptpaste.data.toRequest
 import dev.ubai.promptpaste.network.AiClient
+import dev.ubai.promptpaste.R
 import java.util.UUID
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -37,7 +38,7 @@ data class PromptPasteUiState(
 
 class PromptPasteViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = SettingsRepository(application)
-    private val aiClient = AiClient(repository)
+    private val aiClient = AiClient(repository, application)
     private var requestJob: Job? = null
     private var modelsJob: Job? = null
     private var requestGeneration = 0
@@ -98,7 +99,7 @@ class PromptPasteViewModel(application: Application) : AndroidViewModel(applicat
     private fun runTransform(request: ActionRequest) {
         val text = state.input
         if (text.isBlank()) {
-            state = state.copy(error = "Add or select some text first.")
+            state = state.copy(error = getApplication<Application>().getString(R.string.status_add_text))
             return
         }
         requestJob?.cancel()
@@ -125,7 +126,8 @@ class PromptPasteViewModel(application: Application) : AndroidViewModel(applicat
                 if (generation == requestGeneration) {
                     state = state.copy(
                         isRunning = false,
-                        error = error.message ?: "The request failed.",
+                        error = error.message
+                            ?: getApplication<Application>().getString(R.string.ime_request_failed),
                     )
                 }
             }
@@ -166,11 +168,19 @@ class PromptPasteViewModel(application: Application) : AndroidViewModel(applicat
             .onSuccess {
                 state = state.copy(
                     apiKeyDraft = state.apiKeyDraft.trim(),
-                    apiKeyStatus = if (state.apiKeyDraft.isBlank()) "API key removed" else "API key stored securely",
+                    apiKeyStatus = getApplication<Application>().getString(
+                        if (state.apiKeyDraft.isBlank()) {
+                            R.string.status_api_key_removed
+                        } else {
+                            R.string.status_api_key_saved
+                        },
+                    ),
                 )
             }
             .onFailure {
-                state = state.copy(apiKeyStatus = it.message ?: "Could not store the API key.")
+                state = state.copy(
+                    apiKeyStatus = getApplication<Application>().getString(R.string.status_api_key_error),
+                )
             }
     }
 
@@ -191,7 +201,11 @@ class PromptPasteViewModel(application: Application) : AndroidViewModel(applicat
                     state = state.copy(
                         isLoadingModels = false,
                         availableModels = models,
-                        modelStatus = "${models.size} models available",
+                        modelStatus = getApplication<Application>().resources.getQuantityString(
+                            R.plurals.status_models_available,
+                            models.size,
+                            models.size,
+                        ),
                     )
                 }
             } catch (error: CancellationException) {
@@ -200,7 +214,8 @@ class PromptPasteViewModel(application: Application) : AndroidViewModel(applicat
                 if (state.settings.provider == provider) {
                     state = state.copy(
                         isLoadingModels = false,
-                        modelStatus = error.message ?: "Could not load models.",
+                        modelStatus = error.message
+                            ?: getApplication<Application>().getString(R.string.status_models_error),
                     )
                 }
             }
@@ -219,7 +234,9 @@ class PromptPasteViewModel(application: Application) : AndroidViewModel(applicat
         if (normalized.name.isBlank() ||
             (normalized.inputMode == InputMode.TRANSFORM && normalized.prompt.isBlank())
         ) {
-            state = state.copy(error = "An action needs a name and transformation prompt.")
+            state = state.copy(
+                error = getApplication<Application>().getString(R.string.status_action_invalid),
+            )
             return
         }
         val actions = state.actions.toMutableList()

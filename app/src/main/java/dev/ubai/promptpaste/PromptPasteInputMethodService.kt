@@ -1,5 +1,6 @@
 package dev.ubai.promptpaste
 
+import android.app.LocaleManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -25,6 +26,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import dev.ubai.promptpaste.data.ActionRequest
 import dev.ubai.promptpaste.data.BuiltInAction
+import dev.ubai.promptpaste.data.Provider
 import dev.ubai.promptpaste.data.SettingsRepository
 import dev.ubai.promptpaste.data.toRequest
 import dev.ubai.promptpaste.network.AiClient
@@ -40,7 +42,7 @@ import kotlinx.coroutines.launch
 class PromptPasteInputMethodService : InputMethodService() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val repository by lazy { SettingsRepository(this) }
-    private val aiClient by lazy { AiClient(repository) }
+    private val aiClient by lazy { AiClient(repository, this) }
 
     private lateinit var rootLayout: LinearLayout
     private lateinit var statusView: TextView
@@ -83,6 +85,9 @@ class PromptPasteInputMethodService : InputMethodService() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
             )
+
+            clipChildren = false
+            clipToPadding = false
         }
         rootLayout = root
 
@@ -90,9 +95,14 @@ class PromptPasteInputMethodService : InputMethodService() {
         val statusRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
+
+            clipChildren = false
+            clipToPadding = false
+
+            setPadding(0, dp(4), 0, dp(4))
         }
         statusView = TextView(this).apply {
-            text = getString(R.string.ime_select_text)
+            text = uiString(R.string.ime_select_text)
             textSize = 13f
             setTextColor(palette.onBackground)
             setTypeface(typeface, Typeface.BOLD)
@@ -106,10 +116,10 @@ class PromptPasteInputMethodService : InputMethodService() {
                 marginEnd = dp(6)
             }
         }
-        settingsButton = compactButton(getString(R.string.ime_settings), palette, primary = false).apply {
+        settingsButton = compactButton(uiString(R.string.ime_settings), palette, primary = false).apply {
             setOnClickListener { openPromptPasteSettings() }
         }
-        keyboardButton = compactButton(getString(R.string.ime_keyboard), palette, primary = false).apply {
+        keyboardButton = compactButton(uiString(R.string.ime_keyboard), palette, primary = false).apply {
             setOnClickListener { returnToPreviousKeyboard() }
         }
         statusRow.addView(statusView)
@@ -127,7 +137,7 @@ class PromptPasteInputMethodService : InputMethodService() {
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         }
         errorDismissButton = TextView(this).apply {
-            text = "Dismiss"
+            text = uiString(R.string.ime_dismiss)
             textSize = 12f
             setTypeface(typeface, Typeface.BOLD)
             setTextColor(palette.onErrorContainer)
@@ -155,15 +165,24 @@ class PromptPasteInputMethodService : InputMethodService() {
         }
         root.addView(errorContainer, errorParams)
 
-        // Horizontal Action chips scroll container
+
         actionsRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, dp(8), 0, dp(2))
+
+            setPadding(0, dp(6), 0, dp(6))
+
+            clipChildren = false
+            clipToPadding = false
         }
+
         actionsScroll = HorizontalScrollView(this).apply {
             isHorizontalScrollBarEnabled = false
             overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
+
+            clipChildren = false
+            clipToPadding = false
+
             addView(actionsRow)
         }
         root.addView(
@@ -176,7 +195,7 @@ class PromptPasteInputMethodService : InputMethodService() {
 
         // Review state container with vertical scroll view (prevents overflow on long text)
         reviewHeaderView = TextView(this).apply {
-            text = getString(R.string.ime_review_result)
+            text = uiString(R.string.ime_review_result)
             textSize = 12f
             setTextColor(palette.onSurfaceVariant)
             setTypeface(typeface, Typeface.BOLD)
@@ -199,14 +218,14 @@ class PromptPasteInputMethodService : InputMethodService() {
             addView(reviewTextView)
         }
         reviewCancelButton = compactButton(
-            getString(R.string.ime_cancel_review),
+            uiString(R.string.ime_cancel_review),
             palette,
             primary = false,
         ).apply {
             setOnClickListener { dismissReview() }
         }
         reviewReplaceButton = compactButton(
-            getString(R.string.ime_replace),
+            uiString(R.string.ime_replace),
             palette,
             primary = true,
         ).apply {
@@ -247,7 +266,7 @@ class PromptPasteInputMethodService : InputMethodService() {
             ),
         )
 
-        rebuildActions()
+        refreshLocalizedUi()
 
         // Keep bottom padding in sync with the navigation bar height so buttons
         // are never hidden behind the back/home/recents bar on 3-button-nav devices.
@@ -264,16 +283,36 @@ class PromptPasteInputMethodService : InputMethodService() {
         super.onStartInputView(info, restarting)
         passwordField = info?.inputType?.let(::isPasswordInput) == true
         if (::actionsRow.isInitialized) {
+            refreshLocalizedUi()
             hideReview()
             hideError()
-            rebuildActions()
-            setIdleStatus()
+            if (!consumeKeyboardReviewOutcome()) setIdleStatus()
+            requestInputViewResize()
+        }
+    }
+
+    override fun onWindowShown() {
+        super.onWindowShown()
+        refreshLocalizedUi()
+        consumeKeyboardReviewOutcome()
+        if (::reviewContainer.isInitialized && reviewContainer.visibility != View.VISIBLE) {
+            requestInputViewResize()
         }
     }
 
     override fun onFinishInput() {
         cancelRequest(resetUi = false)
         super.onFinishInput()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (::rootLayout.isInitialized) {
+            rootLayout.post {
+                refreshLocalizedUi()
+                requestInputViewResize()
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -283,7 +322,9 @@ class PromptPasteInputMethodService : InputMethodService() {
 
     private fun rebuildActions() {
         val settings = repository.loadSettings()
-        val requests = BuiltInAction.entries.map { it.toRequest(settings) } +
+        val requests = BuiltInAction.entries.map { action ->
+            action.toRequest(settings).copy(label = uiString(action.labelResource()))
+        } +
             repository.loadActions().filter { it.enabled }.map { it.toRequest() }
         val palette = palette()
         actionsRow.removeAllViews()
@@ -299,15 +340,42 @@ class PromptPasteInputMethodService : InputMethodService() {
         }
     }
 
+    private fun refreshLocalizedUi() {
+        if (!::rootLayout.isInitialized) return
+        val configuration = localizedConfiguration()
+        if (!configuration.locales.isEmpty) {
+            val direction = TextUtils.getLayoutDirectionFromLocale(configuration.locales[0])
+            rootLayout.layoutDirection = direction
+            actionsRow.layoutDirection = direction
+        }
+        settingsButton.text = uiString(R.string.ime_settings)
+        keyboardButton.text = uiString(R.string.ime_keyboard)
+        errorDismissButton.text = uiString(R.string.ime_dismiss)
+        reviewHeaderView.text = uiString(R.string.ime_review_result)
+        reviewCancelButton.text = uiString(R.string.ime_cancel_review)
+        reviewReplaceButton.text = uiString(R.string.ime_replace)
+        rebuildActions()
+    }
+
+    private fun localizedConfiguration(): Configuration = Configuration(resources.configuration).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val appLocales = getSystemService(LocaleManager::class.java).applicationLocales
+            if (!appLocales.isEmpty) setLocales(appLocales)
+        }
+    }
+
+    private fun uiString(resourceId: Int, vararg formatArgs: Any): String =
+        createConfigurationContext(localizedConfiguration()).resources.getString(resourceId, *formatArgs)
+
     private fun runAction(request: ActionRequest) {
         if (passwordField) {
-            showError(getString(R.string.ime_password_disabled))
+            showError(uiString(R.string.ime_password_disabled))
             return
         }
         val connection = currentInputConnection
         val selectedText = runCatching { connection?.getSelectedText(0)?.toString() }.getOrNull()
         if (connection == null || selectedText.isNullOrBlank()) {
-            showError(getString(R.string.ime_no_selection))
+            showError(uiString(R.string.ime_no_selection))
             return
         }
 
@@ -315,7 +383,7 @@ class PromptPasteInputMethodService : InputMethodService() {
         requestJob?.cancel()
         val generation = ++requestGeneration
         val settings = repository.loadSettings()
-        setRunning(getString(R.string.ime_running_action, request.label))
+        setRunning(uiString(R.string.ime_running_action, request.label))
         requestJob = serviceScope.launch {
             try {
                 val result = aiClient.transform(
@@ -329,8 +397,10 @@ class PromptPasteInputMethodService : InputMethodService() {
                     outputLimit = request.outputLimit,
                 )
                 if (generation != requestGeneration) return@launch
-                if (settings.reviewBeforeKeyboardReplacement) {
+                if (settings.reviewBeforeKeyboardReplacement && settings.reviewInsideKeyboard) {
                     showReview(selectedText, result)
+                } else if (settings.reviewBeforeKeyboardReplacement) {
+                    openFullScreenReview(request, selectedText, result, settings.provider)
                 } else {
                     replaceUnchangedSelection(selectedText, result)
                 }
@@ -338,23 +408,29 @@ class PromptPasteInputMethodService : InputMethodService() {
                 if (generation == requestGeneration) setIdleStatus()
             } catch (error: Exception) {
                 if (generation == requestGeneration) {
-                    showError(error.message ?: getString(R.string.ime_request_failed))
+                    showError(error.message ?: uiString(R.string.ime_request_failed))
                 }
             }
         }
     }
 
+    private fun BuiltInAction.labelResource(): Int = when (this) {
+        BuiltInAction.CORRECT -> R.string.process_text_correct_label
+        BuiltInAction.REWRITE -> R.string.process_text_rewrite_label
+        BuiltInAction.RUN_PROMPT -> R.string.process_text_run_label
+    }
+
     private suspend fun replaceUnchangedSelection(original: String, result: String) {
         if (passwordField) {
             hideReview()
-            showError(getString(R.string.ime_password_disabled))
+            showError(uiString(R.string.ime_password_disabled))
             return
         }
         val connection = currentInputConnection
         val currentSelection = runCatching { connection?.getSelectedText(0)?.toString() }.getOrNull()
         if (connection == null || currentSelection != original) {
             hideReview()
-            showError(getString(R.string.ime_selection_changed))
+            showError(uiString(R.string.ime_selection_changed))
             return
         }
 
@@ -368,7 +444,7 @@ class PromptPasteInputMethodService : InputMethodService() {
         }.getOrDefault(false)
         if (!committed) {
             setReviewControlsEnabled(true)
-            showError(getString(R.string.ime_replace_failed))
+            showError(uiString(R.string.ime_replace_failed))
             return
         }
 
@@ -376,7 +452,7 @@ class PromptPasteInputMethodService : InputMethodService() {
         hideError()
         val palette = palette()
         statusView.setTextColor(palette.primary)
-        statusView.text = getString(R.string.ime_replaced)
+        statusView.text = uiString(R.string.ime_replaced)
         progressView.visibility = View.GONE
         delay(350)
         returnToPreviousKeyboard()
@@ -392,7 +468,59 @@ class PromptPasteInputMethodService : InputMethodService() {
         setReviewControlsEnabled(true)
         val palette = palette()
         statusView.setTextColor(palette.onBackground)
-        statusView.text = getString(R.string.ime_review_result)
+        statusView.text = uiString(R.string.ime_review_result)
+        requestInputViewResize()
+    }
+
+    private fun openFullScreenReview(
+        request: ActionRequest,
+        original: String,
+        result: String,
+        activeProvider: Provider,
+    ) {
+        val provider = Provider.entries.firstOrNull { it.id == request.providerId } ?: activeProvider
+        KeyboardReviewSession.clear()
+        progressView.visibility = View.GONE
+        statusView.text = uiString(R.string.ime_opening_review)
+        runCatching {
+            startActivity(
+                KeyboardReviewActivity.createIntent(
+                    context = this,
+                    original = original,
+                    result = result,
+                    actionLabel = request.label,
+                    providerLabel = provider.displayName,
+                ),
+            )
+        }.onFailure {
+            showReview(original, result)
+        }
+    }
+
+    private fun consumeKeyboardReviewOutcome(): Boolean {
+        if (!::statusView.isInitialized) return false
+        return when (val outcome = KeyboardReviewSession.consume()) {
+            is KeyboardReviewOutcome.Replace -> {
+                hideError()
+                setRunning(uiString(R.string.ime_replacing))
+                requestJob = serviceScope.launch {
+                    delay(150)
+                    replaceUnchangedSelection(outcome.original, outcome.result)
+                }
+                true
+            }
+            KeyboardReviewOutcome.Cancel -> {
+                hideReview()
+                hideError()
+                setIdleStatus()
+                requestJob = serviceScope.launch {
+                    delay(150)
+                    returnToPreviousKeyboard()
+                }
+                true
+            }
+            null -> false
+        }
     }
 
     private fun confirmReview() {
@@ -402,7 +530,7 @@ class PromptPasteInputMethodService : InputMethodService() {
         settingsButton.isEnabled = false
         val palette = palette()
         statusView.setTextColor(palette.onBackground)
-        statusView.text = getString(R.string.ime_replacing)
+        statusView.text = uiString(R.string.ime_replacing)
         requestJob = serviceScope.launch {
             replaceUnchangedSelection(original, result)
         }
@@ -419,6 +547,24 @@ class PromptPasteInputMethodService : InputMethodService() {
         reviewContainer.visibility = View.GONE
         actionsScroll.visibility = View.VISIBLE
         setReviewControlsEnabled(true)
+        requestInputViewResize()
+    }
+
+    private fun requestInputViewResize() {
+        if (!::rootLayout.isInitialized) return
+        rootLayout.layoutParams = (rootLayout.layoutParams ?: ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+        )).apply {
+            width = ViewGroup.LayoutParams.MATCH_PARENT
+            height = ViewGroup.LayoutParams.WRAP_CONTENT
+        }
+        rootLayout.requestLayout()
+        rootLayout.post {
+            rootLayout.requestLayout()
+            (rootLayout.parent as? View)?.requestLayout()
+            window?.window?.decorView?.requestLayout()
+        }
     }
 
     private fun setReviewControlsEnabled(enabled: Boolean) {
@@ -443,9 +589,9 @@ class PromptPasteInputMethodService : InputMethodService() {
         val palette = palette()
         statusView.setTextColor(palette.onBackground)
         statusView.text = if (passwordField) {
-            getString(R.string.ime_password_disabled)
+            uiString(R.string.ime_password_disabled)
         } else {
-            getString(R.string.ime_select_text)
+            uiString(R.string.ime_select_text)
         }
     }
 
@@ -459,7 +605,7 @@ class PromptPasteInputMethodService : InputMethodService() {
         }
         val palette = palette()
         statusView.setTextColor(palette.error)
-        statusView.text = getString(R.string.ime_request_failed)
+        statusView.text = uiString(R.string.ime_request_failed)
         if (::errorContainer.isInitialized) {
             errorTextView.text = message
             errorContainer.visibility = View.VISIBLE

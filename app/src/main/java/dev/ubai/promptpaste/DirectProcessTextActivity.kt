@@ -58,8 +58,8 @@ abstract class DirectProcessTextActivity(
     private fun finishWithResult(text: String) {
         if (readOnly) {
             (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
-                .setPrimaryClip(ClipData.newPlainText("PromptPaste result", text))
-            Toast.makeText(this, "Result copied", Toast.LENGTH_SHORT).show()
+                .setPrimaryClip(ClipData.newPlainText(getString(R.string.clipboard_result_label), text))
+            Toast.makeText(this, getString(R.string.result_copied), Toast.LENGTH_SHORT).show()
         } else {
             setResult(RESULT_OK, Intent().putExtra(Intent.EXTRA_PROCESS_TEXT, text))
         }

@@ -62,6 +62,6 @@ class MainActivity : ComponentActivity() {
 
     private fun writeClipboard(text: String) {
         (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
-            .setPrimaryClip(ClipData.newPlainText("PromptPaste result", text))
+            .setPrimaryClip(ClipData.newPlainText(getString(R.string.clipboard_result_label), text))
     }
 }

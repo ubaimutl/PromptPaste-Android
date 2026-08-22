@@ -30,6 +30,10 @@ class SettingsRepository(context: Context) {
                 "review_before_keyboard_replacement",
                 defaults.reviewBeforeKeyboardReplacement,
             ),
+            reviewInsideKeyboard = preferences.getBoolean(
+                "review_inside_keyboard",
+                defaults.reviewInsideKeyboard,
+            ),
             language = string("variable_language", defaults.language),
             tone = string("variable_tone", defaults.tone),
             style = string("variable_style", defaults.style),
@@ -49,6 +53,7 @@ class SettingsRepository(context: Context) {
             putInt("run_input_limit", settings.runInputLimit)
             putInt("run_output_limit", settings.runOutputLimit)
             putBoolean("review_before_keyboard_replacement", settings.reviewBeforeKeyboardReplacement)
+            putBoolean("review_inside_keyboard", settings.reviewInsideKeyboard)
             putString("variable_language", settings.language)
             putString("variable_tone", settings.tone)
             putString("variable_style", settings.style)

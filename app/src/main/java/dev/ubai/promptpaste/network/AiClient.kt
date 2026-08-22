@@ -1,5 +1,11 @@
 package dev.ubai.promptpaste.network
 
+import android.app.LocaleManager
+import android.content.Context
+import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.StringRes
+import dev.ubai.promptpaste.R
 import dev.ubai.promptpaste.data.AppSettings
 import dev.ubai.promptpaste.data.InputMode
 import dev.ubai.promptpaste.data.ModelOption
@@ -20,7 +26,12 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 
-class AiClient(private val repository: SettingsRepository) {
+class AiClient(
+    private val repository: SettingsRepository,
+    context: Context,
+) {
+    private val context = context.applicationContext
+
     suspend fun transform(
         text: String,
         promptTemplate: String,
@@ -33,15 +44,12 @@ class AiClient(private val repository: SettingsRepository) {
     ): String {
         val estimatedTokens = estimateTokens(text)
         if (inputLimit > 0 && estimatedTokens > inputLimit) {
-            throw AiException(
-                "Selected text is about $estimatedTokens tokens, above this action's " +
-                    "$inputLimit-token input limit. Select less text or raise the limit.",
-            )
+            throw AiException(message(R.string.error_input_limit, estimatedTokens, inputLimit))
         }
 
         val provider = Provider.fromId(providerOverride.ifBlank { settings.provider.id })
         val model = modelOverride.ifBlank { settings.modelFor(provider) }
-        if (model.isBlank()) throw AiException("Choose a model in Settings first.")
+        if (model.isBlank()) throw AiException(message(R.string.error_choose_model))
         val prompt = expandPromptTemplate(promptTemplate, text, settings)
         val requestedOutput = if (inputMode == InputMode.PROMPT && outputLimit <= 0) 2000 else outputLimit
 
@@ -100,11 +108,11 @@ class AiClient(private val repository: SettingsRepository) {
         } catch (error: CancellationException) {
             throw error
         } catch (error: SocketTimeoutException) {
-            throw AiException("The request timed out. Try again.")
+            throw AiException(message(R.string.error_request_timeout))
         } catch (error: UnknownHostException) {
-            throw AiException("Could not connect. Check your internet connection or local server.")
+            throw AiException(message(R.string.error_connection))
         } catch (error: IOException) {
-            throw AiException("Could not connect. Check your internet connection or local server.", error)
+            throw AiException(message(R.string.error_connection), error)
         }
     }
 
@@ -307,28 +315,23 @@ class AiClient(private val repository: SettingsRepository) {
         if (outputLimit > 0) outputLimit else estimateTokens(text).plus(180).coerceIn(220, 2000)
 
     private fun requiredKey(provider: Provider): String = repository.getApiKey(provider).ifBlank {
-        throw AiException("Add a ${provider.displayName} API key in Settings.")
+        throw AiException(message(R.string.error_api_key_required, provider.displayName))
     }
 
     private fun providerError(response: HttpResult, provider: Provider, model: String): AiException {
-        val detail = when (val error = response.data.opt("error")) {
-            is JSONObject -> error.optString("message")
-            is String -> error
-            else -> ""
-        }
         val message = when (response.status) {
-            401, 403 -> "${provider.displayName} rejected the API key. Check it in Settings."
-            404 -> "${provider.displayName} could not find model “$model”."
-            408 -> "${provider.displayName} timed out. Try again."
-            429 -> "${provider.displayName} rate limit reached. Wait and try again."
-            in 500..599 -> "${provider.displayName} is temporarily unavailable (${response.status})."
-            else -> detail.ifBlank { "${provider.displayName} rejected the request (${response.status})." }
+            401, 403 -> message(R.string.error_api_key_rejected, provider.displayName)
+            404 -> message(R.string.error_model_not_found, provider.displayName, model)
+            408 -> message(R.string.error_provider_timeout, provider.displayName)
+            429 -> message(R.string.error_rate_limit, provider.displayName)
+            in 500..599 -> message(R.string.error_provider_unavailable, provider.displayName, response.status)
+            else -> message(R.string.error_provider_rejected, provider.displayName, response.status)
         }
         return AiException(message)
     }
 
     private fun outputLimitError() = AiException(
-        "Response reached the output limit. Raise the action's output limit or use less text.",
+        message(R.string.error_output_limit),
     )
 
     private suspend fun requestJson(
@@ -357,9 +360,13 @@ class AiClient(private val repository: SettingsRepository) {
             val status = connection.responseCode
             val stream = if (status in 200..399) connection.inputStream else connection.errorStream
             val responseText = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
-            val data = if (responseText.isBlank()) JSONObject() else runCatching { JSONObject(responseText) }
+                val data = if (responseText.isBlank()) JSONObject() else runCatching { JSONObject(responseText) }
                 .getOrElse {
-                    if (status in 200..299) throw AiException("${providerNameFromUrl(url)} returned an invalid response.")
+                    if (status in 200..299) {
+                        throw AiException(
+                            message(R.string.error_invalid_response, providerNameFromUrl(url)),
+                        )
+                    }
                     JSONObject()
                 }
             HttpResult(status, data)
@@ -377,7 +384,17 @@ class AiClient(private val repository: SettingsRepository) {
         "cerebras.ai" in url -> "Cerebras"
         "openai.com" in url -> "OpenAI"
         "vercel.sh" in url -> "Vercel AI Gateway"
-        else -> "Provider"
+        else -> message(R.string.error_provider_generic)
+    }
+
+    private fun message(@StringRes resourceId: Int, vararg formatArgs: Any): String {
+        val configuration = Configuration(context.resources.configuration)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val appLocales = context.getSystemService(LocaleManager::class.java).applicationLocales
+            if (!appLocales.isEmpty) configuration.setLocales(appLocales)
+        }
+        return context.createConfigurationContext(configuration).resources
+            .getString(resourceId, *formatArgs)
     }
 
     private fun encode(value: String): String = URLEncoder.encode(value, Charsets.UTF_8.name())
