@@ -1,11 +1,26 @@
+<div align="center">
+
+<img src="docs/images/promptpaste-icon.png" alt="PromptPaste Logo" width="100">
+
 # PromptPaste
 
-[![Latest Release](https://img.shields.io/github/v/release/ubaimutl/PromptPaste-Android)](https://github.com/ubaimutl/PromptPaste-Android/releases/latest)
-[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](https://github.com/ubaimutl/PromptPaste-Android/blob/main/LICENSE)
+**AI text assistant for Android**
+
+<br>
+
+[![Latest Release](https://img.shields.io/github/v/release/ubaimutl/PromptPaste-Android?style=flat-square)](https://github.com/ubaimutl/PromptPaste-Android/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
+[![Android](https://img.shields.io/badge/Android-8%2B-3DDC84?style=flat-square&logo=android)](https://developer.android.com)
+
+</div>
+
+<br>
 
 PromptPaste is an AI text assistant that lets you correct, rewrite, transform, and run custom AI actions on selected text.
 
-It works with multiple AI providers and allows you to create your own actions using prompts and variables. Your API keys stay on your device and are protected using Android Keystore.
+It works with multiple AI providers and allows you to create your own actions using prompts and variables.
+
+Your API keys stay on your device and are protected using Android Keystore.
 
 ## Showcase
 
@@ -15,7 +30,7 @@ It works with multiple AI providers and allows you to create your own actions us
 
 ### Workflow
 
-Select text, choose an action, review the generated result, and replace the original selection.
+Select text → choose an action → review the generated result → replace the original selection.
 
 ![PromptPaste workflow from selecting text through reviewing and replacing the result](docs/images/promptpaste-workflow.png)
 
@@ -27,53 +42,80 @@ Requires Android 8.0 or newer.
 
 When installing outside an app store, Android may ask you to allow installation from the browser or file manager used to open the APK.
 
-After installation, open PromptPaste, select your AI provider, add your API key, and choose a model.
+After installation:
+
+1. Open PromptPaste
+2. Select your AI provider
+3. Add your API key
+4. Choose a model
+5. Create your actions
 
 ## Features
+
+### AI Actions
 
 - Correct, rewrite, and transform selected text
 - Run selected text as an AI prompt
 - Create unlimited custom actions
-- Use variables like `${selection}`, `${language}`, `${tone}`, and `${style}`
+- Use variables:
+  - `${selection}`
+  - `${language}`
+  - `${tone}`
+  - `${style}`
 - Choose provider, model, and token limits per action
 - Preview and edit results before replacing text
+
+### Android Integration
+
 - Replace text directly from Android selection actions
 - Optional action keyboard for apps that do not expose selection actions
-- Support for:
+- No accessibility service
+- No background clipboard monitoring
 
-  - Ollama
-  - OpenAI
-  - OpenRouter
-  - Gemini
-  - Groq
-  - Cerebras
-  - Vercel AI Gateway
+### Supported AI Providers
+
+- Ollama
+- OpenAI
+- OpenRouter
+- Gemini
+- Groq
+- Cerebras
+- Vercel AI Gateway
+
+### Privacy
 
 - API keys encrypted using Android Keystore
 - No account required
 - No analytics
-- No background clipboard monitoring
-- No accessibility service
+- No telemetry
+- No clipboard monitoring
 
-## How it works
+## How It Works
 
-Android controls how applications can access and modify text from other apps. PromptPaste uses official Android integrations:
+Android controls how applications can access and modify text from other apps.
+
+PromptPaste uses official Android integrations:
 
 1. Select text in any supported app.
 2. Choose a PromptPaste action from the selection menu.
-3. PromptPaste processes the text and returns the result.
+3. PromptPaste processes the text.
+4. Review and replace the result.
 
-Some applications do not expose editable text or hide Android selection actions. For these apps, PromptPaste provides an optional action keyboard that allows running actions while keeping the normal keyboard workflow.
+Some applications do not expose editable text or hide Android selection actions.
+
+For these apps, PromptPaste provides an optional action keyboard.
 
 ## Action Keyboard
 
-The optional PromptPaste Actions keyboard provides another way to run AI actions:
+The optional PromptPaste Actions keyboard provides another way to run AI actions.
 
 1. Enable **PromptPaste Actions** in Android settings.
-2. Switch to the PromptPaste keyboard from the keyboard selector.
+2. Switch to the PromptPaste keyboard.
 3. Choose an action such as Correct, Rewrite, or a custom action.
 
-The keyboard only reads selected text after you explicitly trigger an action. It does not monitor typing and is disabled in password fields.
+The keyboard only reads selected text after you explicitly trigger an action.
+
+It does not monitor typing and is disabled in password fields.
 
 ## AI Providers
 
@@ -97,7 +139,9 @@ The app:
 - Does not use accessibility services
 - Does not require an account
 
-Cloud providers have their own privacy policies, retention rules, and usage limits. Review their policies before sending sensitive information.
+Cloud providers have their own privacy policies, retention rules, and usage limits.
+
+Review their policies before sending sensitive information.
 
 ## Build
 
@@ -113,7 +157,7 @@ Build debug APK:
 ./gradlew assembleDebug
 ```
 
-The APK will be generated at:
+APK output:
 
 ```
 app/build/outputs/apk/debug/app-debug.apk
@@ -153,6 +197,6 @@ The goal is to provide the same AI text workflow everywhere.
 
 ## License
 
-GPL-3.0
+MIT
 
-See [LICENSE](https://github.com/ubaimutl/PromptPaste-Android/blob/main/LICENSE).
+See [LICENSE](LICENSE).

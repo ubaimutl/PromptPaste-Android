@@ -1142,6 +1142,15 @@ private fun SettingsScreen(
                         },
                     )
                 }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+                SettingSwitchRow(
+                    title = stringResource(R.string.settings_select_all_title),
+                    description = stringResource(R.string.settings_select_all_description),
+                    checked = settings.showSelectAllInKeyboard,
+                    onCheckedChange = {
+                        onSettingsChange(settings.copy(showSelectAllInKeyboard = it))
+                    },
+                )
             }
         }
 

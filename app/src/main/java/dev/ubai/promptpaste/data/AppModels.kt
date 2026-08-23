@@ -46,6 +46,7 @@ data class AppSettings(
     val runOutputLimit: Int = 0,
     val reviewBeforeKeyboardReplacement: Boolean = true,
     val reviewInsideKeyboard: Boolean = false,
+    val showSelectAllInKeyboard: Boolean = true,
     val language: String = "English",
     val tone: String = "professional",
     val style: String = "clear and concise",

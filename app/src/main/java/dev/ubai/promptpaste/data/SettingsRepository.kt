@@ -34,6 +34,10 @@ class SettingsRepository(context: Context) {
                 "review_inside_keyboard",
                 defaults.reviewInsideKeyboard,
             ),
+            showSelectAllInKeyboard = preferences.getBoolean(
+                "show_select_all_in_keyboard",
+                defaults.showSelectAllInKeyboard,
+            ),
             language = string("variable_language", defaults.language),
             tone = string("variable_tone", defaults.tone),
             style = string("variable_style", defaults.style),
@@ -54,6 +58,7 @@ class SettingsRepository(context: Context) {
             putInt("run_output_limit", settings.runOutputLimit)
             putBoolean("review_before_keyboard_replacement", settings.reviewBeforeKeyboardReplacement)
             putBoolean("review_inside_keyboard", settings.reviewInsideKeyboard)
+            putBoolean("show_select_all_in_keyboard", settings.showSelectAllInKeyboard)
             putString("variable_language", settings.language)
             putString("variable_tone", settings.tone)
             putString("variable_style", settings.style)

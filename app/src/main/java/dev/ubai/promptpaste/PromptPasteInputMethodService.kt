@@ -15,9 +15,12 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.ExtractedTextRequest
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.HorizontalScrollView
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
@@ -57,8 +60,9 @@ class PromptPasteInputMethodService : InputMethodService() {
     private lateinit var reviewTextView: TextView
     private lateinit var reviewCancelButton: Button
     private lateinit var reviewReplaceButton: Button
-    private lateinit var keyboardButton: Button
-    private lateinit var settingsButton: Button
+    private lateinit var selectAllButton: ImageButton
+    private lateinit var keyboardButton: ImageButton
+    private lateinit var settingsButton: ImageButton
     private var actionButtons: List<Button> = emptyList()
     private var requestJob: Job? = null
     private var requestGeneration = 0
@@ -116,16 +120,35 @@ class PromptPasteInputMethodService : InputMethodService() {
                 marginEnd = dp(6)
             }
         }
-        settingsButton = compactButton(uiString(R.string.ime_settings), palette, primary = false).apply {
+        val settings = repository.loadSettings()
+        selectAllButton = iconButton(
+            R.drawable.ic_ime_select_all,
+            uiString(R.string.ime_select_all),
+            palette,
+        ).apply {
+            visibility = if (settings.showSelectAllInKeyboard) View.VISIBLE else View.GONE
+            (layoutParams as? LinearLayout.LayoutParams)?.marginEnd = dp(6)
+            setOnClickListener { selectAllText() }
+        }
+        settingsButton = iconButton(
+            R.drawable.ic_ime_settings,
+            uiString(R.string.ime_settings),
+            palette,
+        ).apply {
+            (layoutParams as? LinearLayout.LayoutParams)?.marginEnd = dp(6)
             setOnClickListener { openPromptPasteSettings() }
         }
-        keyboardButton = compactButton(uiString(R.string.ime_keyboard), palette, primary = false).apply {
+        keyboardButton = iconButton(
+            R.drawable.ic_ime_keyboard,
+            uiString(R.string.ime_keyboard),
+            palette,
+        ).apply {
             setOnClickListener { returnToPreviousKeyboard() }
         }
         statusRow.addView(statusView)
         statusRow.addView(progressView)
+        statusRow.addView(selectAllButton)
         statusRow.addView(settingsButton)
-        statusRow.addView(space(dp(6)))
         statusRow.addView(keyboardButton)
         root.addView(statusRow)
 
@@ -322,6 +345,9 @@ class PromptPasteInputMethodService : InputMethodService() {
 
     private fun rebuildActions() {
         val settings = repository.loadSettings()
+        if (::selectAllButton.isInitialized) {
+            selectAllButton.visibility = if (settings.showSelectAllInKeyboard) View.VISIBLE else View.GONE
+        }
         val requests = BuiltInAction.entries.map { action ->
             action.toRequest(settings).copy(label = uiString(action.labelResource()))
         } +
@@ -348,8 +374,9 @@ class PromptPasteInputMethodService : InputMethodService() {
             rootLayout.layoutDirection = direction
             actionsRow.layoutDirection = direction
         }
-        settingsButton.text = uiString(R.string.ime_settings)
-        keyboardButton.text = uiString(R.string.ime_keyboard)
+        if (::selectAllButton.isInitialized) selectAllButton.contentDescription = uiString(R.string.ime_select_all)
+        if (::settingsButton.isInitialized) settingsButton.contentDescription = uiString(R.string.ime_settings)
+        if (::keyboardButton.isInitialized) keyboardButton.contentDescription = uiString(R.string.ime_keyboard)
         errorDismissButton.text = uiString(R.string.ime_dismiss)
         reviewHeaderView.text = uiString(R.string.ime_review_result)
         reviewCancelButton.text = uiString(R.string.ime_cancel_review)
@@ -527,7 +554,8 @@ class PromptPasteInputMethodService : InputMethodService() {
         val original = pendingReviewSelection ?: return
         val result = reviewTextView.text.toString()
         setReviewControlsEnabled(false)
-        settingsButton.isEnabled = false
+        if (::selectAllButton.isInitialized) selectAllButton.isEnabled = false
+        if (::settingsButton.isInitialized) settingsButton.isEnabled = false
         val palette = palette()
         statusView.setTextColor(palette.onBackground)
         statusView.text = uiString(R.string.ime_replacing)
@@ -579,12 +607,14 @@ class PromptPasteInputMethodService : InputMethodService() {
         statusView.text = message
         progressView.visibility = View.VISIBLE
         actionButtons.forEach { it.isEnabled = false }
-        settingsButton.isEnabled = false
+        if (::selectAllButton.isInitialized) selectAllButton.isEnabled = false
+        if (::settingsButton.isInitialized) settingsButton.isEnabled = false
     }
 
     private fun setIdleStatus() {
         progressView.visibility = View.GONE
-        settingsButton.isEnabled = true
+        if (::selectAllButton.isInitialized) selectAllButton.isEnabled = !passwordField
+        if (::settingsButton.isInitialized) settingsButton.isEnabled = true
         actionButtons.forEach { it.isEnabled = !passwordField }
         val palette = palette()
         statusView.setTextColor(palette.onBackground)
@@ -597,7 +627,8 @@ class PromptPasteInputMethodService : InputMethodService() {
 
     private fun showError(message: String) {
         progressView.visibility = View.GONE
-        settingsButton.isEnabled = true
+        if (::selectAllButton.isInitialized) selectAllButton.isEnabled = !passwordField
+        if (::settingsButton.isInitialized) settingsButton.isEnabled = true
         if (::reviewContainer.isInitialized && reviewContainer.visibility == View.VISIBLE) {
             setReviewControlsEnabled(true)
         } else {
@@ -655,6 +686,39 @@ class PromptPasteInputMethodService : InputMethodService() {
             )
             InputType.TYPE_CLASS_NUMBER -> variation == InputType.TYPE_NUMBER_VARIATION_PASSWORD
             else -> false
+        }
+    }
+
+    private fun selectAllText() {
+        if (passwordField) return
+        val connection = currentInputConnection ?: return
+        val handled = connection.performContextMenuAction(android.R.id.selectAll)
+        if (!handled) {
+            val extracted = connection.getExtractedText(ExtractedTextRequest(), 0)
+            if (extracted?.text != null && extracted.text.isNotEmpty()) {
+                connection.setSelection(0, extracted.text.length)
+            }
+        }
+    }
+
+    private fun iconButton(
+        iconRes: Int,
+        contentDesc: String,
+        palette: Palette,
+        sizeDp: Int = 34,
+        iconSizeDp: Int = 18,
+    ): ImageButton = ImageButton(this).apply {
+        setImageResource(iconRes)
+        contentDescription = contentDesc
+        setColorFilter(palette.onSurface)
+        scaleType = ImageView.ScaleType.CENTER_INSIDE
+        val pad = dp((sizeDp - iconSizeDp) / 2)
+        setPadding(pad, pad, pad, pad)
+        layoutParams = LinearLayout.LayoutParams(dp(sizeDp), dp(sizeDp))
+        background = GradientDrawable().apply {
+            cornerRadius = dp(sizeDp / 2).toFloat()
+            setColor(palette.surface)
+            setStroke(dp(1), palette.stroke)
         }
     }
 

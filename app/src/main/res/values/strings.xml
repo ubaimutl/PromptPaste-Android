@@ -20,6 +20,7 @@
     <string name="ime_request_failed">The request failed.</string>
     <string name="ime_settings">Settings</string>
     <string name="ime_keyboard">Keyboard</string>
+    <string name="ime_select_all">Select all</string>
     <string name="ime_dismiss">Dismiss</string>
 
     <string name="nav_editor">Editor</string>
@@ -103,6 +104,8 @@
     <string name="settings_review_description">Preview AI output before replacing selected text.</string>
     <string name="settings_inline_review_title">Review inside keyboard</string>
     <string name="settings_inline_review_description">Keep the preview inside the compact keyboard panel.</string>
+    <string name="settings_select_all_title">Show Select All icon</string>
+    <string name="settings_select_all_description">Show a quick Select All button in the keyboard toolbar.</string>
     <string name="settings_provider_title">AI provider</string>
     <string name="settings_provider_description">Choose the provider, credentials, and model used by PromptPaste.</string>
     <string name="settings_ollama_address">Ollama address</string>
