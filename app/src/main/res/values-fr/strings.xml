@@ -26,4 +26,7 @@
     <string name="error_output_limit">La réponse a atteint la limite de sortie. Augmentez la limite de l’action ou utilisez moins de texte.</string>
     <string name="error_invalid_response">%1$s a renvoyé une réponse non valide.</string>
     <string name="error_provider_generic">Fournisseur</string>
+    <string name="ime_select_all">Tout sélectionner</string>
+    <string name="settings_select_all_title">Afficher l’icône Tout sélectionner</string>
+    <string name="settings_select_all_description">Afficher un bouton de sélection rapide de tout le texte dans la barre d’outils du clavier.</string>
 </resources>

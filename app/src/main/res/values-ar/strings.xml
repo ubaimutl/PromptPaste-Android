@@ -142,4 +142,7 @@
     <string name="error_output_limit">بلغت الاستجابة حد الإخراج. ارفع حد إخراج الإجراء أو استخدم نصًا أقل.</string>
     <string name="error_invalid_response">أعاد %1$s استجابة غير صالحة.</string>
     <string name="error_provider_generic">المزوّد</string>
+    <string name="ime_select_all">تحديد الكل</string>
+    <string name="settings_select_all_title">إظهار رمز تحديد الكل</string>
+    <string name="settings_select_all_description">إظهار زر سريع لتحديد كل النص في شريط أدوات لوحة المفاتيح.</string>
 </resources>

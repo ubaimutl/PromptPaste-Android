@@ -26,4 +26,7 @@
     <string name="error_output_limit">La respuesta alcanzó el límite de salida. Aumenta el límite de la acción o usa menos texto.</string>
     <string name="error_invalid_response">%1$s devolvió una respuesta no válida.</string>
     <string name="error_provider_generic">Proveedor</string>
+    <string name="ime_select_all">Seleccionar todo</string>
+    <string name="settings_select_all_title">Mostrar el icono Seleccionar todo</string>
+    <string name="settings_select_all_description">Muestra un botón para seleccionar rápidamente todo el texto en la barra del teclado.</string>
 </resources>

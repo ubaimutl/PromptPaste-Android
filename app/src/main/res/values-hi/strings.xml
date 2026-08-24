@@ -24,4 +24,7 @@
     <string name="error_output_limit">जवाब आउटपुट सीमा तक पहुँच गया। क्रिया की आउटपुट सीमा बढ़ाएँ या कम टेक्स्ट उपयोग करें।</string>
     <string name="error_invalid_response">%1$s ने अमान्य जवाब दिया।</string>
     <string name="error_provider_generic">प्रदाता</string>
+    <string name="ime_select_all">सभी चुनें</string>
+    <string name="settings_select_all_title">“सभी चुनें” आइकन दिखाएँ</string>
+    <string name="settings_select_all_description">कीबोर्ड टूलबार में पूरा टेक्स्ट तुरंत चुनने का बटन दिखाएँ।</string>
 </resources>

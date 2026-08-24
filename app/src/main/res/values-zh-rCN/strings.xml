@@ -24,4 +24,7 @@
     <string name="error_output_limit">响应已达到输出限制。请提高操作的输出限制或使用较少文本。</string>
     <string name="error_invalid_response">%1$s 返回了无效响应。</string>
     <string name="error_provider_generic">提供商</string>
+    <string name="ime_select_all">全选</string>
+    <string name="settings_select_all_title">显示“全选”图标</string>
+    <string name="settings_select_all_description">在键盘工具栏中显示快速选择全部文本的按钮。</string>
 </resources>

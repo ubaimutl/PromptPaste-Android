@@ -142,4 +142,7 @@
     <string name="error_output_limit">Die Antwort hat das Ausgabelimit erreicht. Erhöhe das Ausgabelimit der Aktion oder verwende weniger Text.</string>
     <string name="error_invalid_response">%1$s hat eine ungültige Antwort zurückgegeben.</string>
     <string name="error_provider_generic">Anbieter</string>
+    <string name="ime_select_all">Alles auswählen</string>
+    <string name="settings_select_all_title">Symbol „Alles auswählen“ anzeigen</string>
+    <string name="settings_select_all_description">Eine Schaltfläche zum schnellen Auswählen des gesamten Textes in der Tastaturleiste anzeigen.</string>
 </resources>
