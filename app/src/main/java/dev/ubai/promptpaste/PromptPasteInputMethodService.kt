@@ -27,6 +27,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import dev.ubai.promptpaste.data.ActionRequest
 import dev.ubai.promptpaste.data.BuiltInAction
 import dev.ubai.promptpaste.data.Provider
@@ -79,7 +80,16 @@ class PromptPasteInputMethodService : InputMethodService() {
     override fun onShowInputRequested(flags: Int, configChange: Boolean): Boolean = true
 
     override fun onCreateInputView(): View {
+        val darkTheme = isDarkTheme()
         val palette = palette()
+        window?.window?.let { imeWindow ->
+            imeWindow.navigationBarColor = palette.background
+            WindowInsetsControllerCompat(imeWindow, imeWindow.decorView)
+                .isAppearanceLightNavigationBars = !darkTheme
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                imeWindow.isNavigationBarContrastEnforced = false
+            }
+        }
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             minimumHeight = dp(80)
@@ -716,7 +726,7 @@ class PromptPasteInputMethodService : InputMethodService() {
         setPadding(pad, pad, pad, pad)
         layoutParams = LinearLayout.LayoutParams(dp(sizeDp), dp(sizeDp))
         background = GradientDrawable().apply {
-            cornerRadius = dp(sizeDp / 2).toFloat()
+            cornerRadius = dp(8).toFloat()
             setColor(palette.surface)
             setStroke(dp(1), palette.stroke)
         }
@@ -734,7 +744,7 @@ class PromptPasteInputMethodService : InputMethodService() {
         setPadding(dp(14), 0, dp(14), 0)
         setTextColor(if (primary) palette.onPrimary else palette.onSurface)
         background = GradientDrawable().apply {
-            cornerRadius = dp(19).toFloat()
+            cornerRadius = dp(8).toFloat()
             if (primary) {
                 setColor(palette.primary)
             } else {
@@ -748,34 +758,37 @@ class PromptPasteInputMethodService : InputMethodService() {
         layoutParams = LinearLayout.LayoutParams(width, 1)
     }
 
-    private fun palette(): Palette {
-        val dark = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
+    private fun isDarkTheme(): Boolean =
+        resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
             Configuration.UI_MODE_NIGHT_YES
+
+    private fun palette(): Palette {
+        val dark = isDarkTheme()
         return if (dark) {
             Palette(
-                background = Color.rgb(17, 19, 24), // #111318
-                surface = Color.rgb(29, 32, 38), // #1D2026
-                onBackground = Color.rgb(226, 226, 233), // #E2E2E9
-                onSurface = Color.rgb(240, 241, 245), // #F0F1F5
-                onSurfaceVariant = Color.rgb(156, 163, 175), // #9CA3AF
-                primary = Color.rgb(141, 164, 255), // #8DA4FF
-                onPrimary = Color.rgb(0, 31, 96), // #001F60
-                stroke = Color.rgb(55, 60, 72), // #373C48
-                error = Color.rgb(255, 180, 171), // #FFB4AB
-                errorContainer = Color.rgb(60, 23, 23), // #3C1717
-                onErrorContainer = Color.rgb(255, 218, 214), // #FFDAD6
+                background = Color.rgb(66, 62, 55), // #423E37
+                surface = Color.rgb(72, 67, 60), // #48433C
+                onBackground = Color.rgb(245, 243, 221), // #F5F3DD
+                onSurface = Color.rgb(245, 243, 221), // #F5F3DD
+                onSurfaceVariant = Color.rgb(216, 204, 177), // #D8CCB1
+                primary = Color.rgb(91, 86, 76), // #5B564C
+                onPrimary = Color.rgb(245, 243, 221), // #F5F3DD
+                stroke = Color.rgb(109, 103, 91), // #6D675B
+                error = Color.rgb(248, 113, 113), // #F87171
+                errorContainer = Color.rgb(43, 18, 18), // #2B1212
+                onErrorContainer = Color.rgb(252, 165, 165), // #FCA5A5
             )
         } else {
             Palette(
-                background = Color.rgb(248, 249, 253), // #F8F9FD
-                surface = Color.rgb(237, 240, 247), // #EDF0F7
-                onBackground = Color.rgb(25, 28, 32), // #191C20
-                onSurface = Color.rgb(22, 25, 32), // #161920
-                onSurfaceVariant = Color.rgb(75, 85, 99), // #4B5563
-                primary = Color.rgb(30, 86, 208), // #1E56D0
+                background = Color.rgb(255, 255, 255), // #FFFFFF
+                surface = Color.rgb(250, 250, 250), // #FAFAFA
+                onBackground = Color.rgb(23, 23, 23), // #171717
+                onSurface = Color.rgb(23, 23, 23), // #171717
+                onSurfaceVariant = Color.rgb(102, 102, 102), // #666666
+                primary = Color.rgb(23, 23, 23), // #171717
                 onPrimary = Color.WHITE,
-                stroke = Color.rgb(209, 213, 219), // #D1D5DB
-                error = Color.rgb(186, 26, 26), // #BA1A1A
+                stroke = Color.rgb(229, 229, 229), // #E5E5E5
+                error = Color.rgb(220, 38, 38), // #DC2626
                 errorContainer = Color.rgb(254, 242, 242), // #FEF2F2
                 onErrorContainer = Color.rgb(153, 27, 27), // #991B1B
             )

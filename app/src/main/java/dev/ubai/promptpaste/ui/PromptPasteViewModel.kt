@@ -32,6 +32,9 @@ data class PromptPasteUiState(
     val availableModels: List<ModelOption> = emptyList(),
     val isLoadingModels: Boolean = false,
     val modelStatus: String = "",
+    val actionAvailableModels: List<ModelOption> = emptyList(),
+    val actionModelsProviderId: String = "",
+    val isLoadingActionModels: Boolean = false,
     val apiKeyDraft: String = "",
     val apiKeyStatus: String = "",
 )
@@ -41,6 +44,7 @@ class PromptPasteViewModel(application: Application) : AndroidViewModel(applicat
     private val aiClient = AiClient(repository, application)
     private var requestJob: Job? = null
     private var modelsJob: Job? = null
+    private var actionModelsJob: Job? = null
     private var requestGeneration = 0
 
     var state by mutableStateOf(
@@ -217,6 +221,33 @@ class PromptPasteViewModel(application: Application) : AndroidViewModel(applicat
                         modelStatus = error.message
                             ?: getApplication<Application>().getString(R.string.status_models_error),
                     )
+                }
+            }
+        }
+    }
+
+    fun refreshActionModels(provider: Provider) {
+        actionModelsJob?.cancel()
+        actionModelsJob = viewModelScope.launch {
+            state = state.copy(
+                isLoadingActionModels = true,
+                actionModelsProviderId = provider.id,
+                actionAvailableModels = emptyList(),
+            )
+            try {
+                val models = aiClient.fetchModels(state.settings, provider)
+                state = state.copy(
+                    isLoadingActionModels = false,
+                    actionModelsProviderId = provider.id,
+                    actionAvailableModels = models,
+                )
+            } catch (error: CancellationException) {
+                if (state.actionModelsProviderId == provider.id) {
+                    state = state.copy(isLoadingActionModels = false)
+                }
+            } catch (_: Exception) {
+                if (state.actionModelsProviderId == provider.id) {
+                    state = state.copy(isLoadingActionModels = false)
                 }
             }
         }

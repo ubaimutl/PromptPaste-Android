@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -40,6 +41,7 @@ import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Edit
@@ -52,7 +54,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -62,6 +63,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -144,55 +146,72 @@ fun PromptPasteApp(
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.ic_promptpaste_topbar),
-                            contentDescription = stringResource(R.string.promptpaste_logo),
-                            modifier = Modifier.size(32.dp),
-                        )
-                        Column {
-                            Text("PromptPaste", fontWeight = FontWeight.Bold)
-                            Text(
-                                state.settings.provider.displayName,
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.SemiBold,
+            Column {
+                TopAppBar(
+                    title = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.ic_promptpaste_topbar),
+                                contentDescription = stringResource(R.string.promptpaste_logo),
+                                modifier = Modifier.size(28.dp),
                             )
+                            Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
+                                Text(
+                                    "PromptPaste",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                Text(
+                                    state.settings.provider.displayName,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
                         }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                ),
-            )
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            }
         },
         bottomBar = {
-            NavigationBar(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                AppSection.entries.forEach { item ->
-                    val itemLabel = stringResource(item.labelRes)
-                    NavigationBarItem(
-                        selected = section == item,
-                        onClick = { sectionName = item.name },
-                        icon = {
-                            Icon(
-                                imageVector = if (section == item) item.selectedIcon else item.unselectedIcon,
-                                contentDescription = itemLabel,
-                            )
-                        },
-                        label = {
-                            Text(
-                                itemLabel,
-                                fontWeight = if (section == item) FontWeight.Bold else FontWeight.Normal,
-                            )
-                        },
-                    )
+            Column {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 0.dp,
+                ) {
+                    AppSection.entries.forEach { item ->
+                        val itemLabel = stringResource(item.labelRes)
+                        NavigationBarItem(
+                            selected = section == item,
+                            onClick = { sectionName = item.name },
+                            icon = {
+                                Icon(
+                                    imageVector = if (section == item) item.selectedIcon else item.unselectedIcon,
+                                    contentDescription = itemLabel,
+                                )
+                            },
+                            label = {
+                                Text(
+                                    itemLabel,
+                                    fontWeight = if (section == item) FontWeight.SemiBold else FontWeight.Normal,
+                                )
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                                indicatorColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            ),
+                        )
+                    }
                 }
             }
         },
@@ -217,6 +236,7 @@ fun PromptPasteApp(
                 onDelete = viewModel::deleteAction,
                 onEnabledChange = viewModel::setActionEnabled,
                 onMove = viewModel::moveAction,
+                onRefreshModels = viewModel::refreshActionModels,
                 modifier = Modifier.padding(padding),
             )
             AppSection.SETTINGS -> SettingsScreen(
@@ -453,10 +473,11 @@ private fun EditorScreen(
 ) {
     val resolvedResultActionLabel = resultActionLabel ?: stringResource(R.string.editor_use_as_input)
     val resolvedSupportingText = supportingText ?: stringResource(R.string.editor_default_help)
+    val actionScrollState = rememberScrollState()
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         item {
             Text(
@@ -474,7 +495,7 @@ private fun EditorScreen(
                     label = { Text(stringResource(R.string.editor_text)) },
                     minLines = 6,
                     maxLines = 14,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.large,
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -533,13 +554,15 @@ private fun EditorScreen(
             )
             Spacer(Modifier.height(10.dp))
             Row(
-                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(actionScrollState),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Button(
                     onClick = { onBuiltIn(BuiltInAction.CORRECT) },
                     enabled = !state.isRunning,
-                    shape = RoundedCornerShape(20.dp),
+                    shape = MaterialTheme.shapes.medium,
                 ) {
                     Icon(
                         Icons.Default.AutoFixHigh,
@@ -552,7 +575,7 @@ private fun EditorScreen(
                 FilledTonalButton(
                     onClick = { onBuiltIn(BuiltInAction.REWRITE) },
                     enabled = !state.isRunning,
-                    shape = RoundedCornerShape(20.dp),
+                    shape = MaterialTheme.shapes.medium,
                 ) {
                     Icon(
                         Icons.Default.EditNote,
@@ -565,7 +588,7 @@ private fun EditorScreen(
                 FilledTonalButton(
                     onClick = { onBuiltIn(BuiltInAction.RUN_PROMPT) },
                     enabled = !state.isRunning,
-                    shape = RoundedCornerShape(20.dp),
+                    shape = MaterialTheme.shapes.medium,
                 ) {
                     Icon(
                         Icons.Default.PlayArrow,
@@ -579,16 +602,18 @@ private fun EditorScreen(
                     OutlinedButton(
                         onClick = { onCustom(action) },
                         enabled = !state.isRunning,
-                        shape = RoundedCornerShape(20.dp),
+                        shape = MaterialTheme.shapes.medium,
                     ) { Text(action.name) }
                 }
             }
         }
         if (state.isRunning) {
             item {
-                ElevatedCard(
+                Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.large,
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
@@ -619,9 +644,11 @@ private fun EditorScreen(
         }
         if (state.output.isNotBlank()) {
             item {
-                ElevatedCard(
+                Card(
                     Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = MaterialTheme.shapes.large,
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
@@ -660,7 +687,7 @@ private fun EditorScreen(
                             minLines = 6,
                             maxLines = 16,
                             label = { Text(stringResource(R.string.editor_review_edit)) },
-                            shape = RoundedCornerShape(12.dp),
+                            shape = MaterialTheme.shapes.large,
                         )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -668,7 +695,7 @@ private fun EditorScreen(
                         ) {
                             OutlinedButton(
                                 onClick = { onCopy(state.output) },
-                                shape = RoundedCornerShape(20.dp),
+                                shape = MaterialTheme.shapes.medium,
                             ) {
                                 Icon(
                                     Icons.Default.ContentCopy,
@@ -680,7 +707,7 @@ private fun EditorScreen(
                             }
                             Button(
                                 onClick = onUseResult,
-                                shape = RoundedCornerShape(20.dp),
+                                shape = MaterialTheme.shapes.medium,
                             ) { Text(resolvedResultActionLabel) }
                         }
                     }
@@ -729,6 +756,7 @@ private fun ActionsScreen(
     onDelete: (CustomAction) -> Unit,
     onEnabledChange: (CustomAction, Boolean) -> Unit,
     onMove: (CustomAction, Int) -> Unit,
+    onRefreshModels: (Provider) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showEditor by remember { mutableStateOf(false) }
@@ -736,8 +764,8 @@ private fun ActionsScreen(
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         item {
             Row(
@@ -758,7 +786,7 @@ private fun ActionsScreen(
                         editingAction = null
                         showEditor = true
                     },
-                    shape = RoundedCornerShape(20.dp),
+                    shape = MaterialTheme.shapes.medium,
                 ) {
                     Icon(
                         Icons.Default.Add,
@@ -773,8 +801,9 @@ private fun ActionsScreen(
         if (state.actions.isEmpty()) {
             item {
                 Surface(
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = MaterialTheme.shapes.large,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Column(
@@ -786,7 +815,7 @@ private fun ActionsScreen(
                             Icons.Outlined.AutoAwesome,
                             contentDescription = null,
                             modifier = Modifier.size(36.dp),
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
                             stringResource(R.string.actions_empty_title),
@@ -804,9 +833,11 @@ private fun ActionsScreen(
         }
         items(state.actions, key = { it.id }) { action ->
             val index = state.actions.indexOfFirst { it.id == action.id }
-            ElevatedCard(
+            Card(
                 Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
+                shape = MaterialTheme.shapes.large,
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -822,12 +853,13 @@ private fun ActionsScreen(
                             Spacer(Modifier.height(4.dp))
                             Surface(
                                 shape = RoundedCornerShape(6.dp),
-                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                color = MaterialTheme.colorScheme.surfaceContainer,
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                             ) {
                                 Text(
                                     actionSummary(action),
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                 )
                             }
@@ -896,6 +928,11 @@ private fun ActionsScreen(
     if (showEditor) {
         ActionEditorDialog(
             action = editingAction,
+            activeProvider = state.settings.provider,
+            availableModels = state.actionAvailableModels,
+            availableModelsProviderId = state.actionModelsProviderId,
+            isLoadingModels = state.isLoadingActionModels,
+            onRefreshModels = onRefreshModels,
             onDismiss = { showEditor = false },
             onSave = {
                 onSave(it)
@@ -924,6 +961,11 @@ private fun actionSummary(action: CustomAction): String {
 @Composable
 private fun ActionEditorDialog(
     action: CustomAction?,
+    activeProvider: Provider,
+    availableModels: List<ModelOption>,
+    availableModelsProviderId: String,
+    isLoadingModels: Boolean,
+    onRefreshModels: (Provider) -> Unit,
     onDismiss: () -> Unit,
     onSave: (CustomAction) -> Unit,
 ) {
@@ -952,7 +994,9 @@ private fun ActionEditorDialog(
                 .padding(16.dp)
                 .imePadding(),
             shape = MaterialTheme.shapes.extraLarge,
-            tonalElevation = 6.dp,
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         ) {
             Column(Modifier.padding(20.dp)) {
                 Text(
@@ -971,7 +1015,7 @@ private fun ActionEditorDialog(
                         modifier = Modifier.fillMaxWidth(),
                         label = { Text(stringResource(R.string.action_name)) },
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp),
+                        shape = MaterialTheme.shapes.medium,
                     )
                     EnumPicker(
                         label = stringResource(R.string.action_input_mode),
@@ -1003,20 +1047,24 @@ private fun ActionEditorDialog(
                         },
                         minLines = 4,
                         maxLines = 8,
-                        shape = RoundedCornerShape(10.dp),
+                        shape = MaterialTheme.shapes.medium,
                     )
                     ProviderOverridePicker(providerId) {
                         providerId = it
-                        if (it.isBlank()) model = ""
                     }
-                    OutlinedTextField(
+                    val selectedProvider = Provider.entries.firstOrNull { it.id == providerId }
+                        ?: activeProvider
+                    val modelSuggestions = buildList {
+                        add(ModelOption(selectedProvider.defaultModel))
+                        if (availableModelsProviderId == selectedProvider.id) addAll(availableModels)
+                    }.distinctBy { it.id }
+                    EditableModelPicker(
                         value = model,
                         onValueChange = { model = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text(stringResource(R.string.action_model_override)) },
-                        enabled = providerId.isNotBlank(),
-                        singleLine = true,
-                        shape = RoundedCornerShape(10.dp),
+                        label = stringResource(R.string.action_model_override),
+                        models = modelSuggestions,
+                        isLoading = isLoadingModels && availableModelsProviderId == selectedProvider.id,
+                        onRefresh = { onRefreshModels(selectedProvider) },
                     )
                     NumberField(stringResource(R.string.action_input_limit), inputLimit) { inputLimit = it }
                     NumberField(stringResource(R.string.action_output_limit), outputLimit) { outputLimit = it }
@@ -1078,8 +1126,8 @@ private fun SettingsScreen(
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(22.dp),
+        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 22.dp),
+        verticalArrangement = Arrangement.spacedBy(26.dp),
     ) {
         item {
             SettingsSectionHeader(
@@ -1107,12 +1155,12 @@ private fun SettingsScreen(
                     Button(
                         onClick = onOpenKeyboardSettings,
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
                     ) { Text(stringResource(R.string.settings_enable_keyboard)) }
                     OutlinedButton(
                         onClick = onShowKeyboardPicker,
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
                     ) { Text(stringResource(R.string.settings_choose_keyboard)) }
                 }
                 Spacer(Modifier.height(12.dp))
@@ -1172,7 +1220,7 @@ private fun SettingsScreen(
                         label = { Text(stringResource(R.string.settings_ollama_address)) },
                         supportingText = { Text(stringResource(R.string.settings_emulator_address)) },
                         singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
                     )
                 } else {
                     OutlinedTextField(
@@ -1191,7 +1239,7 @@ private fun SettingsScreen(
                             }
                         },
                         singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
                     )
                     Spacer(Modifier.height(8.dp))
                     Row(
@@ -1209,7 +1257,7 @@ private fun SettingsScreen(
                         Spacer(Modifier.width(12.dp))
                         Button(
                             onClick = onSaveApiKey,
-                            shape = RoundedCornerShape(12.dp),
+                            shape = MaterialTheme.shapes.medium,
                         ) { Text(stringResource(R.string.settings_save_key)) }
                     }
                 }
@@ -1224,7 +1272,7 @@ private fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text(stringResource(R.string.settings_model_id)) },
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.medium,
                 )
                 Spacer(Modifier.height(10.dp))
                 Row(
@@ -1236,7 +1284,7 @@ private fun SettingsScreen(
                         onClick = onRefreshModels,
                         enabled = !state.isLoadingModels,
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
                     ) {
                         if (state.isLoadingModels) {
                             CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
@@ -1248,7 +1296,7 @@ private fun SettingsScreen(
                         FilledTonalButton(
                             onClick = { showModelChooser = true },
                             modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = MaterialTheme.shapes.medium,
                         ) {
                             Text(stringResource(R.string.settings_choose_count, state.availableModels.size))
                         }
@@ -1284,7 +1332,7 @@ private fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("${'$'}{language}") },
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.medium,
                 )
                 Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
@@ -1293,7 +1341,7 @@ private fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("${'$'}{tone}") },
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.medium,
                 )
                 Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
@@ -1302,7 +1350,7 @@ private fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("${'$'}{style}") },
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.medium,
                 )
             }
         }
@@ -1351,7 +1399,7 @@ private fun SettingsScreen(
                     label = { Text(stringResource(R.string.action_model_override)) },
                     enabled = settings.runProviderId.isNotBlank(),
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.medium,
                 )
                 Spacer(Modifier.height(12.dp))
                 NumberField(
@@ -1459,6 +1507,64 @@ private fun ProviderOverridePicker(selectedId: String, onSelected: (String) -> U
 }
 
 @Composable
+private fun EditableModelPicker(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    models: List<ModelOption>,
+    isLoading: Boolean,
+    onRefresh: () -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(Modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text(label) },
+            placeholder = { Text(models.firstOrNull()?.id.orEmpty()) },
+            trailingIcon = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onRefresh, enabled = !isLoading) {
+                        if (isLoading) {
+                            CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+                        } else {
+                            Icon(
+                                Icons.Default.Refresh,
+                                contentDescription = stringResource(R.string.common_refresh),
+                            )
+                        }
+                    }
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(
+                            Icons.Default.KeyboardArrowDown,
+                            contentDescription = stringResource(R.string.models_choose),
+                        )
+                    }
+                }
+            },
+            singleLine = true,
+            shape = MaterialTheme.shapes.medium,
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.widthIn(max = 280.dp),
+        ) {
+            models.forEach { model ->
+                DropdownMenuItem(
+                    text = { Text(model.label) },
+                    onClick = {
+                        onValueChange(model.id)
+                        expanded = false
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun <T> EnumPicker(
     label: String,
     value: String,
@@ -1470,7 +1576,7 @@ private fun <T> EnumPicker(
         OutlinedButton(
             onClick = { expanded = true },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp),
+            shape = MaterialTheme.shapes.medium,
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         ) {
             Column(Modifier.fillMaxWidth()) {
@@ -1502,7 +1608,7 @@ private fun PromptField(label: String, value: String, onValueChange: (String) ->
         label = { Text(label) },
         minLines = 3,
         maxLines = 7,
-        shape = RoundedCornerShape(12.dp),
+        shape = MaterialTheme.shapes.medium,
     )
 }
 
@@ -1515,7 +1621,7 @@ private fun NumberField(label: String, value: String, onValueChange: (String) ->
         label = { Text(label) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         singleLine = true,
-        shape = RoundedCornerShape(12.dp),
+        shape = MaterialTheme.shapes.medium,
     )
 }
 
@@ -1545,13 +1651,13 @@ private fun SettingsSectionHeader(
 private fun SettingsCard(content: @Composable () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            containerColor = MaterialTheme.colorScheme.surface,
         ),
         border = BorderStroke(
             1.dp,
-            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
+            MaterialTheme.colorScheme.outlineVariant,
         ),
     ) {
         Column(Modifier.padding(16.dp)) {
