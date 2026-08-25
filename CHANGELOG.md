@@ -2,6 +2,25 @@
 
 All notable changes to PromptPaste for Android are documented here.
 
+## 1.6.0 - 2026-08-24
+
+### Added
+
+- Vercel-inspired interface with a warm charcoal and cream dark theme.
+- Editable custom-action model picker with provider-specific refresh.
+- Optional Select All action in the PromptPaste keyboard.
+
+### Improved
+
+- Reduced the optimized signed release APK from about 13 MB to 1.58 MB.
+- Matched keyboard and Android navigation colors in light and dark themes.
+- Added Select All translations for all supported languages.
+
+### Fixed
+
+- Restored Android 8.0 compatibility for navigation-bar theme resources.
+- Fixed Android lint failures in the release workflow.
+
 ## 1.5.0 - 2026-08-23
 
 ### Added

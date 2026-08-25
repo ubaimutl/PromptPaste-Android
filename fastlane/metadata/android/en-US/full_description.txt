@@ -1,0 +1,23 @@
+PromptPaste helps you correct, rewrite, transform, and run custom actions on selected text from Android apps.
+
+<b>Features</b>
+<ul>
+<li>Correct spelling, grammar, punctuation, and clarity</li>
+<li>Rewrite selected text while preserving its meaning and tone</li>
+<li>Create reusable custom actions with prompts and variables</li>
+<li>Choose a provider, model, and token limits for individual actions</li>
+<li>Review and edit generated text before replacing the selection</li>
+<li>Use Android text-selection actions or the optional PromptPaste keyboard</li>
+<li>Use a self-hosted Ollama server or supported cloud providers</li>
+</ul>
+
+<b>Privacy</b>
+<ul>
+<li>No account is required</li>
+<li>No analytics or telemetry</li>
+<li>No accessibility service or background clipboard monitoring</li>
+<li>Text is sent only after you explicitly run an action</li>
+<li>API keys are stored locally and protected with Android Keystore</li>
+</ul>
+
+Cloud AI providers are third-party network services with their own privacy policies, retention rules, and usage limits. PromptPaste can instead connect to a self-hosted Ollama server.

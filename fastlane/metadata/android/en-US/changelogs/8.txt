@@ -1,0 +1,1 @@
+New Vercel-inspired interface with a warm charcoal and cream dark theme. Added an editable custom-action model picker with provider-specific refresh, an optional Select All keyboard action, complete UI translations, Android 8 compatibility fixes, and a substantially optimized release build.
