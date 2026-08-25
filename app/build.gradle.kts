@@ -25,6 +25,11 @@ android {
     namespace = "dev.ubai.promptpaste"
     compileSdk = 37
 
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
     defaultConfig {
         applicationId = "dev.ubai.promptpaste"
         minSdk = 26
