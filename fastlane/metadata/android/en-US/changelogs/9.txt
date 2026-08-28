@@ -1,0 +1,1 @@
+Include Fastlane listing metadata in the tagged release source and disable AGP dependency metadata for F-Droid-compatible reproducible builds.

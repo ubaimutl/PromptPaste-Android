@@ -2,6 +2,13 @@
 
 All notable changes to PromptPaste for Android are documented here.
 
+## 1.6.1 - 2026-08-28
+
+### Fixed
+
+- Included the Fastlane listing metadata in the tagged release source for F-Droid.
+- Disabled AGP dependency metadata in release APKs and app bundles for F-Droid-compatible reproducible builds.
+
 ## 1.6.0 - 2026-08-24
 
 ### Added
