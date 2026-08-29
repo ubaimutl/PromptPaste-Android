@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste.ui
+package dev.ubai.plyph.ui
 
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

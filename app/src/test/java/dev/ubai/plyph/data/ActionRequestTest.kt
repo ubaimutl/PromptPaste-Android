@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste.data
+package dev.ubai.plyph.data
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste.data
+package dev.ubai.plyph.data
 
 import android.content.Context
 import androidx.core.content.edit
@@ -6,7 +6,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 class SettingsRepository(context: Context) {
-    private val preferences = context.getSharedPreferences("promptpaste_settings", Context.MODE_PRIVATE)
+    private val preferences = context.getSharedPreferences("plyph_settings", Context.MODE_PRIVATE)
     private val secureStore = SecureStore(context)
 
     fun loadSettings(): AppSettings {

@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to PromptPaste for Android are documented here.
+All notable changes to Plyph for Android are documented here.
 
 ## 1.6.1 - 2026-08-28
 
@@ -15,7 +15,7 @@ All notable changes to PromptPaste for Android are documented here.
 
 - Vercel-inspired interface with a warm charcoal and cream dark theme.
 - Editable custom-action model picker with provider-specific refresh.
-- Optional Select All action in the PromptPaste keyboard.
+- Optional Select All action in the Plyph keyboard.
 
 ### Improved
 
@@ -46,14 +46,14 @@ All notable changes to PromptPaste for Android are documented here.
 
 - Return to the original app after confirming a keyboard replacement.
 - Prevent duplicate keyboard inset padding from creating empty space in Editor and Settings.
-- Resize PromptPaste correctly when the normal Android keyboard opens.
+- Resize Plyph correctly when the normal Android keyboard opens.
 
 ## 1.4.0 - 2026-08-22
 
 ### Added
 
 - Production release signing support through an ignored local `keystore.properties` file.
-- Exact PromptPaste launcher and automatic light/dark top-bar branding.
+- Exact Plyph launcher and automatic light/dark top-bar branding.
 
 ### Improved
 
@@ -63,7 +63,7 @@ All notable changes to PromptPaste for Android are documented here.
 
 ### Fixed
 
-- Close transient PromptPaste screens immediately after replacement.
+- Close transient Plyph screens immediately after replacement.
 - Preserve keyboard visibility and avoid navigation controls covering actions.
 
 ## 1.3.1 - 2026-08-20
@@ -71,7 +71,7 @@ All notable changes to PromptPaste for Android are documented here.
 ### Added
 
 - Direct Correct, Rewrite, and Run prompt actions in Android's selected-text menu.
-- Optional PromptPaste Actions keyboard for apps that hide selected-text actions.
+- Optional Plyph Actions keyboard for apps that hide selected-text actions.
 - Optional review and editing before replacing text from either integration.
 - Custom actions with provider, model, input-limit, and output-limit overrides.
 - Ollama, Groq, Gemini, OpenRouter, Cerebras, OpenAI, and Vercel AI Gateway support.
@@ -79,5 +79,5 @@ All notable changes to PromptPaste for Android are documented here.
 
 ### Fixed
 
-- Made Review before replacing apply to direct selected-text actions as well as the PromptPaste keyboard.
-- Close the transient PromptPaste screen immediately after replacement.
+- Made Review before replacing apply to direct selected-text actions as well as the Plyph keyboard.
+- Close the transient Plyph screen immediately after replacement.

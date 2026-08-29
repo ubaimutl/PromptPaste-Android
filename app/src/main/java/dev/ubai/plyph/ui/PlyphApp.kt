@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste.ui
+package dev.ubai.plyph.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -94,13 +94,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import dev.ubai.promptpaste.R
-import dev.ubai.promptpaste.data.AppSettings
-import dev.ubai.promptpaste.data.BuiltInAction
-import dev.ubai.promptpaste.data.CustomAction
-import dev.ubai.promptpaste.data.InputMode
-import dev.ubai.promptpaste.data.ModelOption
-import dev.ubai.promptpaste.data.Provider
+import dev.ubai.plyph.R
+import dev.ubai.plyph.data.AppSettings
+import dev.ubai.plyph.data.BuiltInAction
+import dev.ubai.plyph.data.CustomAction
+import dev.ubai.plyph.data.InputMode
+import dev.ubai.plyph.data.ModelOption
+import dev.ubai.plyph.data.Provider
 
 
 private enum class AppSection(
@@ -129,8 +129,8 @@ private fun builtInActionLabel(action: BuiltInAction): String = stringResource(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PromptPasteApp(
-    viewModel: PromptPasteViewModel,
+fun PlyphApp(
+    viewModel: PlyphViewModel,
     onPaste: () -> String,
     onCopy: (String) -> Unit,
     onOpenKeyboardSettings: () -> Unit,
@@ -154,13 +154,13 @@ fun PromptPasteApp(
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
                             Image(
-                                painter = painterResource(R.drawable.ic_promptpaste_topbar),
-                                contentDescription = stringResource(R.string.promptpaste_logo),
+                                painter = painterResource(R.drawable.ic_plyph_topbar),
+                                contentDescription = stringResource(R.string.plyph_logo),
                                 modifier = Modifier.size(28.dp),
                             )
                             Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
                                 Text(
-                                    "PromptPaste",
+                                    "Plyph",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.SemiBold,
                                 )
@@ -258,7 +258,7 @@ fun PromptPasteApp(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DirectProcessTextApp(
-    viewModel: PromptPasteViewModel,
+    viewModel: PlyphViewModel,
     action: BuiltInAction,
     readOnly: Boolean,
     onFinish: (String) -> Unit,
@@ -283,7 +283,7 @@ fun DirectProcessTextApp(
             TopAppBar(
                 title = {
                     Column {
-                        Text(stringResource(R.string.promptpaste_action_title, actionLabel), fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.plyph_action_title, actionLabel), fontWeight = FontWeight.Bold)
                         Text(
                             state.settings.provider.displayName,
                             style = MaterialTheme.typography.labelMedium,
@@ -398,7 +398,7 @@ fun DirectProcessTextApp(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProcessTextApp(
-    viewModel: PromptPasteViewModel,
+    viewModel: PlyphViewModel,
     readOnly: Boolean,
     onCopy: (String) -> Unit,
     onFinish: (String) -> Unit,
@@ -412,7 +412,7 @@ fun ProcessTextApp(
             TopAppBar(
                 title = {
                     Column {
-                        Text("PromptPaste", fontWeight = FontWeight.Bold)
+                        Text("Plyph", fontWeight = FontWeight.Bold)
                         Text(
                             state.settings.provider.displayName,
                             style = MaterialTheme.typography.labelMedium,
@@ -457,7 +457,7 @@ fun ProcessTextApp(
 
 @Composable
 private fun EditorScreen(
-    state: PromptPasteUiState,
+    state: PlyphUiState,
     onInputChange: (String) -> Unit,
     onOutputChange: (String) -> Unit,
     onPaste: (() -> Unit)?,
@@ -751,7 +751,7 @@ private fun ErrorCard(message: String) {
 
 @Composable
 private fun ActionsScreen(
-    state: PromptPasteUiState,
+    state: PlyphUiState,
     onSave: (CustomAction) -> Unit,
     onDelete: (CustomAction) -> Unit,
     onEnabledChange: (CustomAction, Boolean) -> Unit,
@@ -1109,7 +1109,7 @@ private fun ActionEditorDialog(
 
 @Composable
 private fun SettingsScreen(
-    state: PromptPasteUiState,
+    state: PlyphUiState,
     onProviderChange: (Provider) -> Unit,
     onSettingsChange: (AppSettings) -> Unit,
     onModelChange: (Provider, String) -> Unit,

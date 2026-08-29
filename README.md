@@ -1,14 +1,14 @@
 <div align="center">
 
-<img src="docs/images/promptpaste-icon.png" alt="PromptPaste Logo" width="100">
+<img src="docs/images/plyph-icon.png" alt="Plyph Logo" width="100">
 
-# PromptPaste
+# Plyph
 
 **AI text assistant for Android**
 
 <br>
 
-[![Latest Release](https://img.shields.io/github/v/release/ubaimutl/PromptPaste-Android?style=flat-square)](https://github.com/ubaimutl/PromptPaste-Android/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/ubaimutl/Plyph-Android?style=flat-square)](https://github.com/ubaimutl/Plyph-Android/releases/latest)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Android](https://img.shields.io/badge/Android-8%2B-3DDC84?style=flat-square&logo=android)](https://developer.android.com)
 
@@ -16,7 +16,7 @@
 
 <br>
 
-PromptPaste is an AI text assistant that lets you correct, rewrite, transform, and run custom AI actions on selected text.
+Plyph is an AI text assistant that lets you correct, rewrite, transform, and run custom AI actions on selected text.
 
 It works with multiple AI providers and allows you to create your own actions using prompts and variables.
 
@@ -26,17 +26,17 @@ Your API keys stay on your device and are protected using Android Keystore.
 
 ### App UI
 
-![PromptPaste app interface showing the editor, custom actions, keyboard integration, and provider settings](docs/images/promptpaste-app-ui.png)
+![Plyph app interface showing the editor, custom actions, keyboard integration, and provider settings](docs/images/plyph-app-ui.png)
 
 ### Workflow
 
 Select text → choose an action → review the generated result → replace the original selection.
 
-![PromptPaste workflow from selecting text through reviewing and replacing the result](docs/images/promptpaste-workflow.png)
+![Plyph workflow from selecting text through reviewing and replacing the result](docs/images/plyph-workflow.png)
 
 ## Download
 
-[Download the latest Android APK](https://github.com/ubaimutl/PromptPaste-Android/releases/latest)
+[Download the latest Android APK](https://github.com/ubaimutl/Plyph-Android/releases/latest)
 
 Requires Android 8.0 or newer.
 
@@ -44,7 +44,7 @@ When installing outside an app store, Android may ask you to allow installation 
 
 After installation:
 
-1. Open PromptPaste
+1. Open Plyph
 2. Select your AI provider
 3. Add your API key
 4. Choose a model
@@ -94,23 +94,23 @@ After installation:
 
 Android controls how applications can access and modify text from other apps.
 
-PromptPaste uses official Android integrations:
+Plyph uses official Android integrations:
 
 1. Select text in any supported app.
-2. Choose a PromptPaste action from the selection menu.
-3. PromptPaste processes the text.
+2. Choose a Plyph action from the selection menu.
+3. Plyph processes the text.
 4. Review and replace the result.
 
 Some applications do not expose editable text or hide Android selection actions.
 
-For these apps, PromptPaste provides an optional action keyboard.
+For these apps, Plyph provides an optional action keyboard.
 
 ## Action Keyboard
 
-The optional PromptPaste Actions keyboard provides another way to run AI actions.
+The optional Plyph Actions keyboard provides another way to run AI actions.
 
-1. Enable **PromptPaste Actions** in Android settings.
-2. Switch to the PromptPaste keyboard.
+1. Enable **Plyph Actions** in Android settings.
+2. Switch to the Plyph keyboard.
 3. Choose an action such as Correct, Rewrite, or a custom action.
 
 The keyboard only reads selected text after you explicitly trigger an action.
@@ -119,7 +119,7 @@ It does not monitor typing and is disabled in password fields.
 
 ## AI Providers
 
-PromptPaste supports:
+Plyph supports:
 
 - Local AI models through Ollama
 - Cloud providers through their APIs
@@ -128,7 +128,7 @@ Each action can use its own provider and model configuration.
 
 ## Privacy
 
-PromptPaste is designed with privacy in mind.
+Plyph is designed with privacy in mind.
 
 The app:
 
@@ -187,7 +187,7 @@ Ollama must listen on an address reachable by the Android device.
 
 ## Related Projects
 
-PromptPaste is available across multiple platforms:
+Plyph is available across multiple platforms:
 
 - GNOME Shell extension
 - Android app

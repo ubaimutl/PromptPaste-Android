@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste.ui.theme
+package dev.ubai.plyph.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -79,7 +79,7 @@ private val DarkColors = darkColorScheme(
     onErrorContainer = Color(0xFFFCA5A5),
 )
 
-private val PromptPasteTypography = Typography(
+private val PlyphTypography = Typography(
     headlineSmall = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.SemiBold,
@@ -138,7 +138,7 @@ private val PromptPasteTypography = Typography(
     ),
 )
 
-private val PromptPasteShapes = Shapes(
+private val PlyphShapes = Shapes(
     extraSmall = RoundedCornerShape(4.dp),
     small = RoundedCornerShape(6.dp),
     medium = RoundedCornerShape(8.dp),
@@ -147,11 +147,11 @@ private val PromptPasteShapes = Shapes(
 )
 
 @Composable
-fun PromptPasteTheme(content: @Composable () -> Unit) {
+fun PlyphTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) DarkColors else LightColors,
-        typography = PromptPasteTypography,
-        shapes = PromptPasteShapes,
+        typography = PlyphTypography,
+        shapes = PlyphShapes,
         content = content,
     )
 }

@@ -1,14 +1,14 @@
 <resources>
-    <string name="app_name">PromptPaste</string>
-    <string name="process_text_open_label">PromptPaste…</string>
+    <string name="app_name">Plyph</string>
+    <string name="process_text_open_label">Plyph…</string>
     <string name="process_text_correct_label">Korrigieren</string>
     <string name="process_text_rewrite_label">Umschreiben</string>
     <string name="process_text_run_label">Prompt ausführen</string>
-    <string name="ime_name">PromptPaste-Aktionen</string>
+    <string name="ime_name">Plyph-Aktionen</string>
     <string name="ime_select_text">Text markieren und Aktion wählen</string>
     <string name="ime_no_selection">Markiere zuerst Text in der App.</string>
     <string name="ime_selection_changed">Die Auswahl wurde geändert. Markiere sie erneut und versuche es noch einmal.</string>
-    <string name="ime_password_disabled">PromptPaste-Aktionen sind in Passwortfeldern deaktiviert.</string>
+    <string name="ime_password_disabled">Plyph-Aktionen sind in Passwortfeldern deaktiviert.</string>
     <string name="ime_running_action">%1$s wird ausgeführt…</string>
     <string name="ime_review_result">Ergebnis vor dem Ersetzen prüfen</string>
     <string name="ime_opening_review">Vorschau wird geöffnet…</string>
@@ -24,8 +24,8 @@
     <string name="nav_editor">Editor</string>
     <string name="nav_actions">Aktionen</string>
     <string name="nav_settings">Einstellungen</string>
-    <string name="promptpaste_logo">PromptPaste-Logo</string>
-    <string name="promptpaste_action_title">PromptPaste: %1$s</string>
+    <string name="plyph_logo">Plyph-Logo</string>
+    <string name="plyph_action_title">Plyph: %1$s</string>
     <string name="common_cancel">Abbrechen</string>
     <string name="common_close">Schließen</string>
     <string name="common_settings">Einstellungen</string>
@@ -51,7 +51,7 @@
     <string name="running_rewrite">Markierter Text wird umgeschrieben…</string>
     <string name="running_prompt">Markierter Prompt wird ausgeführt…</string>
     <string name="editor_default_help">Text einfügen oder aus einer anderen App teilen und dann eine Aktion wählen.</string>
-    <string name="editor_read_only_help">Diese App hat die Auswahl als schreibgeschützt markiert. PromptPaste kopiert stattdessen das Ergebnis.</string>
+    <string name="editor_read_only_help">Diese App hat die Auswahl als schreibgeschützt markiert. Plyph kopiert stattdessen das Ergebnis.</string>
     <string name="editor_process_help">Wähle eine Aktion, prüfe das Ergebnis und kehre dann zur ursprünglichen App zurück.</string>
     <string name="editor_copy_close">Kopieren und schließen</string>
     <string name="editor_use_as_input">Als Eingabe verwenden</string>
@@ -88,18 +88,18 @@
     <string name="action_output_limit">Ausgabe-Tokenlimit (0 = automatisch)</string>
     <string name="action_show_in_list">In Aktionsliste anzeigen</string>
     <string name="settings_keyboard_title">Tastaturintegration</string>
-    <string name="settings_keyboard_description">PromptPaste-Aktionen in anderen Apps verwenden.</string>
-    <string name="settings_keyboard_actions">PromptPaste-Aktionen</string>
+    <string name="settings_keyboard_description">Plyph-Aktionen in anderen Apps verwenden.</string>
+    <string name="settings_keyboard_actions">Plyph-Aktionen</string>
     <string name="settings_keyboard_optional">Optionale Tastatur für Apps, die Android-Textaktionen ausblenden.</string>
     <string name="settings_enable_keyboard">Tastatur aktivieren</string>
     <string name="settings_choose_keyboard">Tastatur wählen</string>
-    <string name="settings_keyboard_warning">Android zeigt den üblichen Hinweis zum Tastaturzugriff. PromptPaste liest markierten Text nur nach dem Ausführen einer Aktion; in Passwortfeldern sind Aktionen deaktiviert.</string>
+    <string name="settings_keyboard_warning">Android zeigt den üblichen Hinweis zum Tastaturzugriff. Plyph liest markierten Text nur nach dem Ausführen einer Aktion; in Passwortfeldern sind Aktionen deaktiviert.</string>
     <string name="settings_review_title">Vor dem Ersetzen prüfen</string>
     <string name="settings_review_description">KI-Ausgabe vor dem Ersetzen des markierten Textes anzeigen.</string>
     <string name="settings_inline_review_title">In der Tastatur prüfen</string>
     <string name="settings_inline_review_description">Die Vorschau im kompakten Tastaturbereich anzeigen.</string>
     <string name="settings_provider_title">KI-Anbieter</string>
-    <string name="settings_provider_description">Anbieter, Zugangsdaten und Modell für PromptPaste auswählen.</string>
+    <string name="settings_provider_description">Anbieter, Zugangsdaten und Modell für Plyph auswählen.</string>
     <string name="settings_ollama_address">Ollama-Adresse</string>
     <string name="settings_emulator_address">Android-Emulator: Der Computer ist normalerweise unter 10.0.2.2 erreichbar</string>
     <string name="settings_api_key">API-Schlüssel</string>
@@ -127,7 +127,7 @@
     <string name="status_models_error">Modelle konnten nicht geladen werden.</string>
     <string name="status_action_invalid">Eine Aktion benötigt einen Namen und einen Transformations-Prompt.</string>
     <string name="result_copied">Ergebnis kopiert</string>
-    <string name="clipboard_result_label">PromptPaste-Ergebnis</string>
+    <string name="clipboard_result_label">Plyph-Ergebnis</string>
     <string name="error_input_limit">Der ausgewählte Text umfasst etwa %1$d Tokens und überschreitet damit das Eingabelimit dieser Aktion von %2$d Tokens. Wähle weniger Text aus oder erhöhe das Limit.</string>
     <string name="error_choose_model">Wähle zuerst ein Modell in den Einstellungen aus.</string>
     <string name="error_request_timeout">Zeitüberschreitung bei der Anfrage. Versuche es erneut.</string>

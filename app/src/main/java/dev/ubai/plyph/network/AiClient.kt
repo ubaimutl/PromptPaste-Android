@@ -1,16 +1,16 @@
-package dev.ubai.promptpaste.network
+package dev.ubai.plyph.network
 
 import android.app.LocaleManager
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import androidx.annotation.StringRes
-import dev.ubai.promptpaste.R
-import dev.ubai.promptpaste.data.AppSettings
-import dev.ubai.promptpaste.data.InputMode
-import dev.ubai.promptpaste.data.ModelOption
-import dev.ubai.promptpaste.data.Provider
-import dev.ubai.promptpaste.data.SettingsRepository
+import dev.ubai.plyph.R
+import dev.ubai.plyph.data.AppSettings
+import dev.ubai.plyph.data.InputMode
+import dev.ubai.plyph.data.ModelOption
+import dev.ubai.plyph.data.Provider
+import dev.ubai.plyph.data.SettingsRepository
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
@@ -74,7 +74,7 @@ class AiClient(
                     model,
                     inputMode,
                     requestedOutput,
-                    mapOf("X-Title" to "PromptPaste"),
+                    mapOf("X-Title" to "Plyph"),
                 )
                 Provider.CEREBRAS -> openAiCompatible(
                     provider,

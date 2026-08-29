@@ -1,14 +1,14 @@
 <resources>
-    <string name="app_name">PromptPaste</string>
-    <string name="process_text_open_label">PromptPaste…</string>
+    <string name="app_name">Plyph</string>
+    <string name="process_text_open_label">Plyph…</string>
     <string name="process_text_correct_label">تصحيح</string>
     <string name="process_text_rewrite_label">إعادة صياغة</string>
     <string name="process_text_run_label">تشغيل المطالبة</string>
-    <string name="ime_name">إجراءات PromptPaste</string>
+    <string name="ime_name">إجراءات Plyph</string>
     <string name="ime_select_text">حدّد نصًا ثم اختر إجراءً</string>
     <string name="ime_no_selection">حدّد نصًا في التطبيق أولًا.</string>
     <string name="ime_selection_changed">تغيّر التحديد. حدّده مجددًا ثم أعد المحاولة.</string>
-    <string name="ime_password_disabled">إجراءات PromptPaste معطلة في حقول كلمات المرور.</string>
+    <string name="ime_password_disabled">إجراءات Plyph معطلة في حقول كلمات المرور.</string>
     <string name="ime_running_action">جارٍ تشغيل %1$s…</string>
     <string name="ime_review_result">راجع النتيجة قبل الاستبدال</string>
     <string name="ime_opening_review">جارٍ فتح المعاينة…</string>
@@ -24,8 +24,8 @@
     <string name="nav_editor">المحرر</string>
     <string name="nav_actions">الإجراءات</string>
     <string name="nav_settings">الإعدادات</string>
-    <string name="promptpaste_logo">شعار PromptPaste</string>
-    <string name="promptpaste_action_title">PromptPaste: %1$s</string>
+    <string name="plyph_logo">شعار Plyph</string>
+    <string name="plyph_action_title">Plyph: %1$s</string>
     <string name="common_cancel">إلغاء</string>
     <string name="common_close">إغلاق</string>
     <string name="common_settings">الإعدادات</string>
@@ -51,7 +51,7 @@
     <string name="running_rewrite">جارٍ إعادة صياغة النص المحدد…</string>
     <string name="running_prompt">جارٍ تشغيل المطالبة المحددة…</string>
     <string name="editor_default_help">الصق نصًا أو شاركه من تطبيق آخر، ثم اختر إجراءً.</string>
-    <string name="editor_read_only_help">وضع هذا التطبيق التحديد للقراءة فقط. سينسخ PromptPaste النتيجة بدلًا من ذلك.</string>
+    <string name="editor_read_only_help">وضع هذا التطبيق التحديد للقراءة فقط. سينسخ Plyph النتيجة بدلًا من ذلك.</string>
     <string name="editor_process_help">اختر إجراءً، راجع النتيجة، ثم ارجع إلى التطبيق الأصلي.</string>
     <string name="editor_copy_close">نسخ وإغلاق</string>
     <string name="editor_use_as_input">استخدام كإدخال</string>
@@ -88,18 +88,18 @@
     <string name="action_output_limit">حد رموز الإخراج (0 = تلقائي)</string>
     <string name="action_show_in_list">إظهار في قائمة الإجراءات</string>
     <string name="settings_keyboard_title">تكامل لوحة المفاتيح</string>
-    <string name="settings_keyboard_description">استخدم إجراءات PromptPaste داخل التطبيقات الأخرى.</string>
-    <string name="settings_keyboard_actions">إجراءات PromptPaste</string>
+    <string name="settings_keyboard_description">استخدم إجراءات Plyph داخل التطبيقات الأخرى.</string>
+    <string name="settings_keyboard_actions">إجراءات Plyph</string>
     <string name="settings_keyboard_optional">لوحة مفاتيح اختيارية للتطبيقات التي تخفي إجراءات النص في Android.</string>
     <string name="settings_enable_keyboard">تفعيل لوحة المفاتيح</string>
     <string name="settings_choose_keyboard">اختيار لوحة المفاتيح</string>
-    <string name="settings_keyboard_warning">سيعرض Android تحذير الوصول المعتاد للوحة المفاتيح. يقرأ PromptPaste النص المحدد فقط عند تشغيل إجراء، وتُعطّل الإجراءات في حقول كلمات المرور.</string>
+    <string name="settings_keyboard_warning">سيعرض Android تحذير الوصول المعتاد للوحة المفاتيح. يقرأ Plyph النص المحدد فقط عند تشغيل إجراء، وتُعطّل الإجراءات في حقول كلمات المرور.</string>
     <string name="settings_review_title">المراجعة قبل الاستبدال</string>
     <string name="settings_review_description">عاين مخرجات الذكاء الاصطناعي قبل استبدال النص المحدد.</string>
     <string name="settings_inline_review_title">المراجعة داخل لوحة المفاتيح</string>
     <string name="settings_inline_review_description">أبقِ المعاينة داخل لوحة المفاتيح المصغرة.</string>
     <string name="settings_provider_title">مزوّد الذكاء الاصطناعي</string>
-    <string name="settings_provider_description">اختر المزوّد وبيانات الاعتماد والنموذج الذي يستخدمه PromptPaste.</string>
+    <string name="settings_provider_description">اختر المزوّد وبيانات الاعتماد والنموذج الذي يستخدمه Plyph.</string>
     <string name="settings_ollama_address">عنوان Ollama</string>
     <string name="settings_emulator_address">محاكي Android: يكون جهازك عادةً على 10.0.2.2</string>
     <string name="settings_api_key">مفتاح API</string>
@@ -127,7 +127,7 @@
     <string name="status_models_error">تعذر تحميل النماذج.</string>
     <string name="status_action_invalid">يحتاج الإجراء إلى اسم ومطالبة تحويل.</string>
     <string name="result_copied">تم نسخ النتيجة</string>
-    <string name="clipboard_result_label">نتيجة PromptPaste</string>
+    <string name="clipboard_result_label">نتيجة Plyph</string>
     <string name="error_input_limit">يبلغ النص المحدد نحو %1$d رمزًا، متجاوزًا حد الإدخال لهذا الإجراء وهو %2$d رمزًا. حدّد نصًا أقل أو ارفع الحد.</string>
     <string name="error_choose_model">اختر نموذجًا من الإعدادات أولًا.</string>
     <string name="error_request_timeout">انتهت مهلة الطلب. حاول مجددًا.</string>

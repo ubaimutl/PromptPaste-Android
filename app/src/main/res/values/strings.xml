@@ -1,14 +1,14 @@
 <resources>
-    <string name="app_name">PromptPaste</string>
-    <string name="process_text_open_label">PromptPaste…</string>
+    <string name="app_name">Plyph</string>
+    <string name="process_text_open_label">Plyph…</string>
     <string name="process_text_correct_label">Correct</string>
     <string name="process_text_rewrite_label">Rewrite</string>
     <string name="process_text_run_label">Run prompt</string>
-    <string name="ime_name">PromptPaste Actions</string>
+    <string name="ime_name">Plyph Actions</string>
     <string name="ime_select_text">Select text, then choose an action</string>
     <string name="ime_no_selection">Select text in the app first.</string>
     <string name="ime_selection_changed">The selection changed. Select it again and retry.</string>
-    <string name="ime_password_disabled">PromptPaste actions are disabled in password fields.</string>
+    <string name="ime_password_disabled">Plyph actions are disabled in password fields.</string>
     <string name="ime_running_action">Running %1$s…</string>
     <string name="ime_review_result">Review the result before replacing</string>
     <string name="ime_opening_review">Opening review…</string>
@@ -26,8 +26,8 @@
     <string name="nav_editor">Editor</string>
     <string name="nav_actions">Actions</string>
     <string name="nav_settings">Settings</string>
-    <string name="promptpaste_logo">PromptPaste logo</string>
-    <string name="promptpaste_action_title">PromptPaste: %1$s</string>
+    <string name="plyph_logo">Plyph logo</string>
+    <string name="plyph_action_title">Plyph: %1$s</string>
     <string name="common_cancel">Cancel</string>
     <string name="common_close">Close</string>
     <string name="common_settings">Settings</string>
@@ -55,7 +55,7 @@
     <string name="running_prompt">Running selected prompt…</string>
 
     <string name="editor_default_help">Paste text or share it from another app, then choose an action.</string>
-    <string name="editor_read_only_help">This app marked the selection read-only. PromptPaste will copy the result instead.</string>
+    <string name="editor_read_only_help">This app marked the selection read-only. Plyph will copy the result instead.</string>
     <string name="editor_process_help">Choose an action, review the result, then return it to the original app.</string>
     <string name="editor_copy_close">Copy and close</string>
     <string name="editor_use_as_input">Use as input</string>
@@ -94,12 +94,12 @@
     <string name="action_show_in_list">Show in action list</string>
 
     <string name="settings_keyboard_title">Keyboard integration</string>
-    <string name="settings_keyboard_description">Use PromptPaste actions inside other apps.</string>
-    <string name="settings_keyboard_actions">PromptPaste Actions</string>
+    <string name="settings_keyboard_description">Use Plyph actions inside other apps.</string>
+    <string name="settings_keyboard_actions">Plyph Actions</string>
     <string name="settings_keyboard_optional">Optional keyboard for apps that hide Android text actions.</string>
     <string name="settings_enable_keyboard">Enable keyboard</string>
     <string name="settings_choose_keyboard">Choose keyboard</string>
-    <string name="settings_keyboard_warning">Android will show its standard keyboard-access warning. PromptPaste reads selected text only when you run an action, and actions are disabled in password fields.</string>
+    <string name="settings_keyboard_warning">Android will show its standard keyboard-access warning. Plyph reads selected text only when you run an action, and actions are disabled in password fields.</string>
     <string name="settings_review_title">Review before replacing</string>
     <string name="settings_review_description">Preview AI output before replacing selected text.</string>
     <string name="settings_inline_review_title">Review inside keyboard</string>
@@ -107,7 +107,7 @@
     <string name="settings_select_all_title">Show Select All icon</string>
     <string name="settings_select_all_description">Show a quick Select All button in the keyboard toolbar.</string>
     <string name="settings_provider_title">AI provider</string>
-    <string name="settings_provider_description">Choose the provider, credentials, and model used by PromptPaste.</string>
+    <string name="settings_provider_description">Choose the provider, credentials, and model used by Plyph.</string>
     <string name="settings_ollama_address">Ollama address</string>
     <string name="settings_emulator_address">Android emulator: your computer is usually 10.0.2.2</string>
     <string name="settings_api_key">API key</string>
@@ -136,7 +136,7 @@
     <string name="status_models_error">Could not load models.</string>
     <string name="status_action_invalid">An action needs a name and transformation prompt.</string>
     <string name="result_copied">Result copied</string>
-    <string name="clipboard_result_label">PromptPaste result</string>
+    <string name="clipboard_result_label">Plyph result</string>
     <string name="error_input_limit">Selected text is about %1$d tokens, above this action’s %2$d-token input limit. Select less text or raise the limit.</string>
     <string name="error_choose_model">Choose a model in Settings first.</string>
     <string name="error_request_timeout">The request timed out. Try again.</string>

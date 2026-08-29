@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste.ui
+package dev.ubai.plyph.ui
 
 import android.app.Application
 import androidx.compose.runtime.getValue
@@ -6,23 +6,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import dev.ubai.promptpaste.data.AppSettings
-import dev.ubai.promptpaste.data.ActionRequest
-import dev.ubai.promptpaste.data.BuiltInAction
-import dev.ubai.promptpaste.data.CustomAction
-import dev.ubai.promptpaste.data.InputMode
-import dev.ubai.promptpaste.data.ModelOption
-import dev.ubai.promptpaste.data.Provider
-import dev.ubai.promptpaste.data.SettingsRepository
-import dev.ubai.promptpaste.data.toRequest
-import dev.ubai.promptpaste.network.AiClient
-import dev.ubai.promptpaste.R
+import dev.ubai.plyph.data.AppSettings
+import dev.ubai.plyph.data.ActionRequest
+import dev.ubai.plyph.data.BuiltInAction
+import dev.ubai.plyph.data.CustomAction
+import dev.ubai.plyph.data.InputMode
+import dev.ubai.plyph.data.ModelOption
+import dev.ubai.plyph.data.Provider
+import dev.ubai.plyph.data.SettingsRepository
+import dev.ubai.plyph.data.toRequest
+import dev.ubai.plyph.network.AiClient
+import dev.ubai.plyph.R
 import java.util.UUID
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-data class PromptPasteUiState(
+data class PlyphUiState(
     val settings: AppSettings,
     val actions: List<CustomAction>,
     val input: String = "",
@@ -39,7 +39,7 @@ data class PromptPasteUiState(
     val apiKeyStatus: String = "",
 )
 
-class PromptPasteViewModel(application: Application) : AndroidViewModel(application) {
+class PlyphViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = SettingsRepository(application)
     private val aiClient = AiClient(repository, application)
     private var requestJob: Job? = null
@@ -48,7 +48,7 @@ class PromptPasteViewModel(application: Application) : AndroidViewModel(applicat
     private var requestGeneration = 0
 
     var state by mutableStateOf(
-        PromptPasteUiState(
+        PlyphUiState(
             settings = repository.loadSettings(),
             actions = repository.loadActions(),
         ),

@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste
+package dev.ubai.plyph
 
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory

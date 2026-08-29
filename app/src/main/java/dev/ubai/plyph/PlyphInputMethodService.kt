@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste
+package dev.ubai.plyph
 
 import android.app.LocaleManager
 import android.content.Context
@@ -28,12 +28,12 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import dev.ubai.promptpaste.data.ActionRequest
-import dev.ubai.promptpaste.data.BuiltInAction
-import dev.ubai.promptpaste.data.Provider
-import dev.ubai.promptpaste.data.SettingsRepository
-import dev.ubai.promptpaste.data.toRequest
-import dev.ubai.promptpaste.network.AiClient
+import dev.ubai.plyph.data.ActionRequest
+import dev.ubai.plyph.data.BuiltInAction
+import dev.ubai.plyph.data.Provider
+import dev.ubai.plyph.data.SettingsRepository
+import dev.ubai.plyph.data.toRequest
+import dev.ubai.plyph.network.AiClient
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +43,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PromptPasteInputMethodService : InputMethodService() {
+class PlyphInputMethodService : InputMethodService() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val repository by lazy { SettingsRepository(this) }
     private val aiClient by lazy { AiClient(repository, this) }
@@ -146,7 +146,7 @@ class PromptPasteInputMethodService : InputMethodService() {
             palette,
         ).apply {
             (layoutParams as? LinearLayout.LayoutParams)?.marginEnd = dp(6)
-            setOnClickListener { openPromptPasteSettings() }
+            setOnClickListener { openPlyphSettings() }
         }
         keyboardButton = iconButton(
             R.drawable.ic_ime_keyboard,
@@ -676,7 +676,7 @@ class PromptPasteInputMethodService : InputMethodService() {
         (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).showInputMethodPicker()
     }
 
-    private fun openPromptPasteSettings() {
+    private fun openPlyphSettings() {
         cancelRequest(resetUi = false)
         startActivity(
             Intent(this, MainActivity::class.java)

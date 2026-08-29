@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PromptPaste"
+rootProject.name = "Plyph"
 include(":app")

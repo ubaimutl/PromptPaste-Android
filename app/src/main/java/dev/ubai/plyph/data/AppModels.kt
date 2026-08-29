@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste.data
+package dev.ubai.plyph.data
 
 enum class Provider(
     val id: String,

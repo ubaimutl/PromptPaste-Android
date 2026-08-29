@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.PromptPaste" parent="android:style/Theme.Material.NoActionBar">
+    <style name="Theme.Plyph" parent="android:style/Theme.Material.NoActionBar">
         <item name="android:fontFamily">sans</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:navigationBarColor">#423E37</item>
@@ -7,7 +7,7 @@
         <item name="android:windowActionModeOverlay">true</item>
     </style>
 
-    <style name="Theme.PromptPaste.Dialog" parent="Theme.PromptPaste">
+    <style name="Theme.Plyph.Dialog" parent="Theme.Plyph">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">false</item>
     </style>

@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste
+package dev.ubai.plyph
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -9,12 +9,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import dev.ubai.promptpaste.ui.ProcessTextApp
-import dev.ubai.promptpaste.ui.PromptPasteViewModel
-import dev.ubai.promptpaste.ui.theme.PromptPasteTheme
+import dev.ubai.plyph.ui.ProcessTextApp
+import dev.ubai.plyph.ui.PlyphViewModel
+import dev.ubai.plyph.ui.theme.PlyphTheme
 
 class ProcessTextActivity : ComponentActivity() {
-    private val viewModel by viewModels<PromptPasteViewModel>()
+    private val viewModel by viewModels<PlyphViewModel>()
     private var readOnly = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +25,7 @@ class ProcessTextActivity : ComponentActivity() {
             viewModel.setInitialInput(intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString())
         }
         setContent {
-            PromptPasteTheme {
+            PlyphTheme {
                 ProcessTextApp(
                     viewModel = viewModel,
                     readOnly = readOnly,
