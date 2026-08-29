@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste
+package dev.ubai.plyph
 
 import android.content.Context
 import android.content.Intent
@@ -38,7 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.ubai.promptpaste.ui.theme.PromptPasteTheme
+import dev.ubai.plyph.ui.theme.PlyphTheme
 
 internal sealed interface KeyboardReviewOutcome {
     data class Replace(val original: String, val result: String) : KeyboardReviewOutcome
@@ -84,7 +84,7 @@ class KeyboardReviewActivity : ComponentActivity() {
         }
 
         setContent {
-            PromptPasteTheme {
+            PlyphTheme {
                 KeyboardReviewApp(
                     actionLabel = actionLabel,
                     providerLabel = providerLabel,
@@ -109,10 +109,10 @@ class KeyboardReviewActivity : ComponentActivity() {
     }
 
     companion object {
-        private const val EXTRA_ORIGINAL = "dev.ubai.promptpaste.keyboard_review.ORIGINAL"
-        private const val EXTRA_RESULT = "dev.ubai.promptpaste.keyboard_review.RESULT"
-        private const val EXTRA_ACTION_LABEL = "dev.ubai.promptpaste.keyboard_review.ACTION_LABEL"
-        private const val EXTRA_PROVIDER_LABEL = "dev.ubai.promptpaste.keyboard_review.PROVIDER_LABEL"
+        private const val EXTRA_ORIGINAL = "dev.ubai.plyph.keyboard_review.ORIGINAL"
+        private const val EXTRA_RESULT = "dev.ubai.plyph.keyboard_review.RESULT"
+        private const val EXTRA_ACTION_LABEL = "dev.ubai.plyph.keyboard_review.ACTION_LABEL"
+        private const val EXTRA_PROVIDER_LABEL = "dev.ubai.plyph.keyboard_review.PROVIDER_LABEL"
 
         fun createIntent(
             context: Context,
@@ -152,7 +152,7 @@ private fun KeyboardReviewApp(
                 title = {
                     Column {
                         Text(
-                            stringResource(R.string.promptpaste_action_title, actionLabel),
+                            stringResource(R.string.plyph_action_title, actionLabel),
                             fontWeight = FontWeight.Bold,
                         )
                         Text(

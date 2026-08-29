@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste
+package dev.ubai.plyph
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -10,15 +10,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import dev.ubai.promptpaste.data.BuiltInAction
-import dev.ubai.promptpaste.ui.DirectProcessTextApp
-import dev.ubai.promptpaste.ui.PromptPasteViewModel
-import dev.ubai.promptpaste.ui.theme.PromptPasteTheme
+import dev.ubai.plyph.data.BuiltInAction
+import dev.ubai.plyph.ui.DirectProcessTextApp
+import dev.ubai.plyph.ui.PlyphViewModel
+import dev.ubai.plyph.ui.theme.PlyphTheme
 
 abstract class DirectProcessTextActivity(
     private val action: BuiltInAction,
 ) : ComponentActivity() {
-    private val viewModel by viewModels<PromptPasteViewModel>()
+    private val viewModel by viewModels<PlyphViewModel>()
     private var readOnly = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +41,7 @@ abstract class DirectProcessTextActivity(
         }
 
         setContent {
-            PromptPasteTheme {
+            PlyphTheme {
                 DirectProcessTextApp(
                     viewModel = viewModel,
                     action = action,

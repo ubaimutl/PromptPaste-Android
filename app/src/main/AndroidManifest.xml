@@ -12,17 +12,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.PromptPaste">
+        android:theme="@style/Theme.Plyph">
         <activity
             android:name=".KeyboardReviewActivity"
             android:excludeFromRecents="true"
             android:exported="false"
             android:noHistory="true"
             android:taskAffinity=""
-            android:theme="@style/Theme.PromptPaste.Dialog" />
+            android:theme="@style/Theme.Plyph.Dialog" />
 
         <service
-            android:name=".PromptPasteInputMethodService"
+            android:name=".PlyphInputMethodService"
             android:exported="true"
             android:label="@string/ime_name"
             android:permission="android.permission.BIND_INPUT_METHOD">
@@ -40,7 +40,7 @@
             android:exported="true"
             android:label="@string/process_text_open_label"
             android:noHistory="true"
-            android:theme="@style/Theme.PromptPaste.Dialog">
+            android:theme="@style/Theme.Plyph.Dialog">
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -54,7 +54,7 @@
             android:exported="true"
             android:label="@string/process_text_correct_label"
             android:noHistory="true"
-            android:theme="@style/Theme.PromptPaste.Dialog">
+            android:theme="@style/Theme.Plyph.Dialog">
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -68,7 +68,7 @@
             android:exported="true"
             android:label="@string/process_text_rewrite_label"
             android:noHistory="true"
-            android:theme="@style/Theme.PromptPaste.Dialog">
+            android:theme="@style/Theme.Plyph.Dialog">
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -82,7 +82,7 @@
             android:exported="true"
             android:label="@string/process_text_run_label"
             android:noHistory="true"
-            android:theme="@style/Theme.PromptPaste.Dialog">
+            android:theme="@style/Theme.Plyph.Dialog">
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT" />
                 <category android:name="android.intent.category.DEFAULT" />

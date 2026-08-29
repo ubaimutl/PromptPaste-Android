@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste
+package dev.ubai.plyph
 
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -23,8 +23,8 @@ class InputMethodManifestTest {
         val services = document.getElementsByTagName("service")
         val service = (0 until services.length)
             .map { services.item(it) as Element }
-            .firstOrNull { it.androidAttribute("name") == ".PromptPasteInputMethodService" }
-        assertNotNull("PromptPaste input method service is missing", service)
+            .firstOrNull { it.androidAttribute("name") == ".PlyphInputMethodService" }
+        assertNotNull("Plyph input method service is missing", service)
         service ?: return
 
         assertEquals("true", service.androidAttribute("exported"))

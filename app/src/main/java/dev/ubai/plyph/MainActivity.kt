@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste
+package dev.ubai.plyph
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -11,15 +11,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import dev.ubai.promptpaste.ui.PromptPasteApp
-import dev.ubai.promptpaste.ui.PromptPasteViewModel
-import dev.ubai.promptpaste.ui.theme.PromptPasteTheme
+import dev.ubai.plyph.ui.PlyphApp
+import dev.ubai.plyph.ui.PlyphViewModel
+import dev.ubai.plyph.ui.theme.PlyphTheme
 
 class MainActivity : ComponentActivity() {
-    private val viewModel by viewModels<PromptPasteViewModel>()
+    private val viewModel by viewModels<PlyphViewModel>()
 
     companion object {
-        const val EXTRA_OPEN_SETTINGS = "dev.ubai.promptpaste.extra.OPEN_SETTINGS"
+        const val EXTRA_OPEN_SETTINGS = "dev.ubai.plyph.extra.OPEN_SETTINGS"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,8 +27,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         if (savedInstanceState == null) viewModel.setInitialInput(sharedText(intent))
         setContent {
-            PromptPasteTheme {
-                PromptPasteApp(
+            PlyphTheme {
+                PlyphApp(
                     viewModel = viewModel,
                     onPaste = { readClipboard() },
                     onCopy = { writeClipboard(it) },

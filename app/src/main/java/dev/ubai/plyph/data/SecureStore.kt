@@ -1,4 +1,4 @@
-package dev.ubai.promptpaste.data
+package dev.ubai.plyph.data
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
@@ -12,7 +12,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
 class SecureStore(context: Context) {
-    private val preferences = context.getSharedPreferences("promptpaste_secrets", Context.MODE_PRIVATE)
+    private val preferences = context.getSharedPreferences("plyph_secrets", Context.MODE_PRIVATE)
     private val keyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
 
     fun get(provider: Provider): String {
@@ -56,7 +56,7 @@ class SecureStore(context: Context) {
     }
 
     private companion object {
-        const val KEY_ALIAS = "dev.ubai.promptpaste.api_keys"
+        const val KEY_ALIAS = "dev.ubai.plyph.api_keys"
         const val TRANSFORMATION = "AES/GCM/NoPadding"
         const val IV_SIZE = 12
     }

@@ -22,7 +22,7 @@ val hasReleaseSigning = releaseStorePath.isNotBlank() &&
     rootProject.file(releaseStorePath).isFile
 
 android {
-    namespace = "dev.ubai.promptpaste"
+    namespace = "dev.ubai.plyph"
     compileSdk = 37
 
     dependenciesInfo {
@@ -31,7 +31,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "dev.ubai.promptpaste"
+        applicationId = "dev.ubai.plyph"
         minSdk = 26
         targetSdk = 37
         versionCode = 9

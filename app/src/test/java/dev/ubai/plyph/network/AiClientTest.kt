@@ -1,6 +1,6 @@
-package dev.ubai.promptpaste.network
+package dev.ubai.plyph.network
 
-import dev.ubai.promptpaste.data.AppSettings
+import dev.ubai.plyph.data.AppSettings
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
